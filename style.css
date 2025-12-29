@@ -55,9 +55,4 @@ button {
 }
 
 
-@media (max-width: 360px) {
-  .riga {
-    grid-template-columns: 30px 1fr 1fr 1fr;
-  }
-}
 
