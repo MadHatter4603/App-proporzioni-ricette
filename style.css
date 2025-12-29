@@ -17,11 +17,15 @@ body {
 
 .riga {
   display: grid;
-  grid-template-columns: 30px 13fr 5fr 5fr;
+  grid-template-columns: 30px minmax(0, 13fr) minmax(0, 5fr) minmax(0, 5fr);
   gap: 10px;
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 10px;
+}
+
+.riga > * {
+  min-width: 0;
 }
 
 input {
@@ -53,6 +57,7 @@ button {
   font-size: 18px;
   border-radius: 10px;
 }
+
 
 
 
