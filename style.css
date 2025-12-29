@@ -1,5 +1,5 @@
 body {
-  background: #000;
+  background: red;
   color: white;
   font-family: Arial, sans-serif;
 }
@@ -47,5 +47,6 @@ button {
   font-size: 18px;
   border-radius: 10px;
 }
+
 
 
