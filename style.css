@@ -16,7 +16,7 @@ body {
 
 /* Contenitore principale dell'app */
 .app {
-  max-width: 100%px;          /* larghezza tipica mobile 480px, è da mettere poi come 100% per maggiore elasticità degli schermi */
+  max-width: 100%;          /* larghezza tipica mobile 480px, è da mettere poi come 100% per maggiore elasticità degli schermi */
   margin: 0 auto;            /* centrato */
   padding: 16px;
   text-align: center;
@@ -222,3 +222,4 @@ button {
     grid-row: 1;
   }
 }
+
