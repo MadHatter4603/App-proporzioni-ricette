@@ -1,5 +1,3 @@
-const contenitore = document.getElementById("ingredienti");
-
 const UNITA = {
   g:   { tipo: "peso",  base: "g",  fattore: 1 },
   kg:  { tipo: "peso",  base: "g",  fattore: 1000 },
@@ -439,5 +437,6 @@ function caricaRicetta() {
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
+
 
 
