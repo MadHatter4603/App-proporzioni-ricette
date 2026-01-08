@@ -12,17 +12,18 @@
 
 <div class="app">
   <h1>Calcolatore per Ricette</h1>
-
+  
+  <div class="salvataggio">
+    <input id="nomeRicetta" placeholder="Nome ricetta">
+    <button onclick="salvaRicetta()">💾 Salva</button>
+  </div>
+  
   <div id="ingredienti"></div>
 
   <button class="add" onclick="aggiungiRiga()">+</button>
-  <!voglio aggiungere tondeggiosità agli angoli di questo bottone e trasparenza!>
 
   <button class="calcola" onclick="calcola()">Calcola nuove proporzioni</button>
+  <select id="listaRicette" onchange="caricaRicetta()">
+    <option value="">-- Ricette salvate --</option>
+  </select> 
 </div>
-
-
-<script src="app.js"></script>
-</body>
-
-</html>
