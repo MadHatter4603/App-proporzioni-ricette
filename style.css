@@ -1,26 +1,61 @@
+/* ======================================================
+   RESET E IMPOSTAZIONI GLOBALI
+   ====================================================== */
+
+/* Usa box-sizing coerente per evitare problemi di larghezza */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 body {
+  margin: 0;
   background: #000;
   color: white;
   font-family: Arial, sans-serif;
 }
 
+/* Contenitore principale dell'app */
 .app {
-  width: 100%;
-  max-width: 100%;
+  max-width: 100%px;          /* larghezza tipica mobile 480px, è da mettere poi come 100% per maggiore elasticità degli schermi */
+  margin: 0 auto;            /* centrato */
   padding: 16px;
   text-align: center;
 }
 
+
+/* ======================================================
+   HEADER E SALVATAGGIO RICETTA
+   ====================================================== */
+
+#nomeRicetta {
+  padding: 4px;
+  font-size: 14px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}
+
+.salvataggio {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 16px 0 24px;
+}
+
+
+/* ======================================================
+   RIGA INGREDIENTE (LAYOUT MOBILE)
+   ====================================================== */
+
+/*
+  Ogni ingrediente è una griglia:
+  colonna 1 → pulsante "-"
+  colonna 2 → contenuto
+*/
 .riga {
   display: grid;
-  grid-template-columns: 30px minmax(0, 11fr) minmax(0, 5fr) minmax(0, 5fr);
+  grid-template-columns: 30px 1fr 1fr;
+  grid-template-rows: auto auto;
   gap: 6px;
-  width: 100%;
-  box-sizing: border-box;
   margin-bottom: 10px;
 }
 
@@ -28,26 +63,108 @@ body {
   min-width: 0;
 }
 
-input {
+/* Pulsante rimozione */
+.remove {
+  grid-row: 1;
+  background: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+
+/* ======================================================
+   INPUT NOME INGREDIENTE
+   ====================================================== */
+
+.nome {
+  grid-column: 2 / span 2; /*occupa 2 colonne*/
   padding: 8px;
+  font-size: 14px;
   border-radius: 5px;
   border: none;
 }
+
+
+/* ======================================================
+   BLOCCO QUANTITÀ/TU HAI
+   ====================================================== */
+
+/* Contiene input + selettore unità */
+.campo-unita {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden; /*fondamentale per i bordi*/
+}
+
+/* posizionamento esplicito */
+.campo-unita.quantita {
+  grid-column: 2;
+}
+.campo-unita.tu-hai {
+  grid-column: 3;
+}
+
+/* Campo numerico */
+.campo-unita input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  background: white;
+  border-radius: 5px 0 0 5px; /*solo a sinistra*/
+}
+
+/* Selettore unità */
+.campo-unita select {
+  width: 40px;
+  min-width: 40px;
+  flex: 0 0 40px;
+  background: #d3d3d3;
+  border: none;
+  border-left: 1px solid #bbb;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+
+/* ======================================================
+   ERRORI DI VALIDAZIONE
+   ====================================================== */
+
+/* Bordo rosso sull'input */
+.input-errore {
+  border: 2px solid red !important;
+}
+
+/* Messaggio di errore */
+.messaggio-errore {
+  position: absolute; /*non so se va messo*/
+  color: red;
+  font-size: 12px;
+  margin-top: 0px;
+  margin-left: 4px;
+}
+
+
+/* ======================================================
+   PULSANTI
+   ====================================================== */
 
 button {
   cursor: pointer;
 }
 
-.remove {
-  background: none;
-  color: white;
-  font-size: 20px;
-}
-
 .add {
-  margin: 5px 0;
-  font-size: 24px;
-  margin-bottom: 30px;
+  margin: 5px 0 30px;
+  font-size: 26px;
+  width: 30px;
+  height: 30px;
+  border-radius: 2px;
+  border: none;
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .calcola {
@@ -57,12 +174,51 @@ button {
   color: white;
   font-size: 18px;
   border-radius: 10px;
+  border: none;
 }
 
 
+/* ======================================================
+   SELECT RICETTE SALVATE
+   ====================================================== */
+
+#listaRicette {
+  margin: 60px auto 0;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 4px;
+}
 
 
+/* ======================================================
+   DESKTOP / SCHERMI GRANDI
+   ====================================================== */
 
+@media (min-width: 768px) {
 
+  .app {
+    max-width: 100%;
+  }
 
+  .riga {
+    grid-template-columns: 30px minmax(0, 13fr) minmax(0, 5fr) minmax(0, 5fr);
+    grid-template-rows: 1;
+    align-items: center;
+  }
 
+  .nome {
+    grid-column: 2;
+  }
+
+  /* posizionamento esplicito */
+.campo-unita.quantita {
+  grid-column: 3;
+}
+.campo-unita.tu-hai {
+  grid-column: 4;
+}
+
+  .remove {
+    grid-row: 1;
+  }
+}
