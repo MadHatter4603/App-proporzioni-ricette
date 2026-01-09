@@ -104,6 +104,9 @@ function aggiungiRiga(nome = "", originale = "", unita = "g", hai = "", unitaHai
 aggiungiRiga();
 aggiungiRiga();
 
+// carica ricette salvate all'avvio
+aggiornaListaRicette();
+
 
 function leggiNumero(valore) {
   if (valore === "") return NaN;
@@ -457,4 +460,5 @@ document.addEventListener("input", e => {
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
+
 
