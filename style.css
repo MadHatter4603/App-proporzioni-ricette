@@ -225,38 +225,23 @@ button {
 
 
 /* ================================
-   FIX iOS: elimina bordi ovali
-   SENZA rimuovere la freccetta
+   Fix Safari iOS (NON distruttivo)
    ================================ */
 
-button,
-select,
-input {
-  border-radius: 0px;          /* mantiene i tuoi angoli */
-}
-
-/* Safari iOS specific */
 @supports (-webkit-touch-callout: none) {
 
   button,
-  select,
-  input {
-    -webkit-appearance: none;
-    appearance: none;
-    background-clip: padding-box;
+  select {
+    border-radius: 0px; /* forza angoli senza pillola */
   }
 
-  /* Ripristina freccetta dei select */
+  /* evita il blu automatico iOS */
+  button {
+    color: inherit;
+  }
+
   select {
-    background-image:
-      linear-gradient(45deg, transparent 50%, #000 50%),
-      linear-gradient(135deg, #000 50%, transparent 50%);
-    background-position:
-      calc(100% - 14px) calc(50% - 2px),
-      calc(100% - 9px)  calc(50% - 2px);
-    background-size: 5px 5px;
-    background-repeat: no-repeat;
-    padding-right: 28px;
+    background-color: #d3d3d3; /* lo stesso che già usi */
   }
 }
 
