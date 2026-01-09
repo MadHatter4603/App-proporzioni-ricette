@@ -39,6 +39,8 @@ function aggiungiRiga(nome = "", originale = "", unita = "g", hai = "", unitaHai
       <input
         class="originale"
         type="text"
+        inputmode="decimal"
+        pattern="[0-9.,]*"
         placeholder="Quantità"
         value="${originale != null ? originale : ""}"
       >
@@ -58,6 +60,8 @@ function aggiungiRiga(nome = "", originale = "", unita = "g", hai = "", unitaHai
       <input
         class="disponibile"
         type="text"
+        inputmode="decimal"
+        pattern="[0-9.,]*"
         placeholder="Tu hai"
         value="${hai != null ? hai : ""}"
       >
@@ -174,11 +178,13 @@ function aggiornaStatoInputQB(riga) {
 
     // Tu hai
     selectHai.value = "qb";
+    selectHai.disabled = true;
     inputHai.value = "";
     inputHai.placeholder = "q.b.";
     inputHai.disabled = true;
     nascondiErrore(inputHai);
-  } else {
+    
+  } else { //ripristino normale
     // Quantità
     inputQuantita.disabled = false;
     inputQuantita.placeholder = "Quantità";
@@ -186,6 +192,7 @@ function aggiornaStatoInputQB(riga) {
     // Tu hai
     inputHai.disabled = false;
     inputHai.placeholder = "Tu hai";
+    selectHai.disabled = false;
   }
 }
 
@@ -433,10 +440,21 @@ function caricaRicetta() {
 }
 
 
+/* =========================
+   BLOCCO CARATTERE "-"
+   ========================= */
+document.addEventListener("input", e => {
+  if (
+    e.target.classList.contains("originale") ||
+    e.target.classList.contains("disponibile")
+  ) {
+    e.target.value = e.target.value.replace(/-/g, "");
+  }
+});
+
+
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
-
-
 
