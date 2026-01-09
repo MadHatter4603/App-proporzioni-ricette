@@ -223,3 +223,12 @@ button {
   }
 }
 
+/* Fix stile iOS */
+input,
+select,
+button {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 5px;
+}
+
