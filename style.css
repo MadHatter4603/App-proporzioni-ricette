@@ -223,13 +223,14 @@ button {
   }
 }
 
-/* Fix stile iOS */
+/* Fix stile iOS 
 input,
 select,
 button {
   -webkit-appearance: none;
   appearance: none;
   border-radius: 0px;
-}
+}*/
+
 
 
