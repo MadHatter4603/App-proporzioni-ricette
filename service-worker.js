@@ -1,4 +1,4 @@
-const CACHE = "ricette-v2.6";
+const CACHE = "ricette-v2.7";
 
 self.addEventListener("install", e => {
   e.waitUntil(
@@ -13,6 +13,7 @@ self.addEventListener("fetch", e => {
     caches.match(e.request).then(r => r || fetch(e.request))
   );
 });
+
 
 
 
