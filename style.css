@@ -236,12 +236,13 @@ button {
   }
 
   /* evita il blu automatico iOS */
-  button {
+  /*button {
     color: inherit;
-  }
+  }*/
 
   select {
     background-color: #d3d3d3; /* lo stesso che già usi */
   }
 }
+
 
