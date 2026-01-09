@@ -229,6 +229,7 @@ select,
 button {
   -webkit-appearance: none;
   appearance: none;
-  border-radius: 5px;
+  border-radius: 0px;
 }
+
 
