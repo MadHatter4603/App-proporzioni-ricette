@@ -57,7 +57,7 @@ self.addEventListener("fetch", e => {
 
 
 // service-worker.js
-const CACHE = "ricette-v2.11"; // 🔑 CAMBIA SEMPRE QUESTO NUMERO
+const CACHE = "ricette-v2.12"; // 🔑 CAMBIA SEMPRE QUESTO NUMERO
 
 self.addEventListener("install", e => {
   console.log("[SW] Installing:", CACHE);
@@ -127,6 +127,7 @@ self.addEventListener("message", e => {
     self.skipWaiting();
   }
 });
+
 
 
 
