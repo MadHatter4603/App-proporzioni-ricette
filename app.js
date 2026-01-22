@@ -1,63 +1,3 @@
-//==================================================================================================================================================
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("./service-worker.js")
-      .then(reg => {
-        console.log("[App] SW registrato");
-
-        // Forza controllo aggiornamenti SUBITO
-        reg.update();
-
-        // Controlla aggiornamenti quando torna visibile
-        document.addEventListener("visibilitychange", () => {
-          if (!document.hidden) {
-            reg.update();
-          }
-        });
-
-        // Se c'è un SW in attesa, attivalo
-        if (reg.waiting) {
-          reg.waiting.postMessage("SKIP_WAITING");
-        }
-
-        // Quando trova un aggiornamento
-        reg.addEventListener("updatefound", () => {
-          const newWorker = reg.installing;
-          
-          newWorker.addEventListener("statechange", () => {
-            // Quando il nuovo SW è pronto
-            if (newWorker.state === "installed") {
-              if (navigator.serviceWorker.controller) {
-                // C'è un vecchio SW, sostituiscilo
-                console.log("[App] Nuovo aggiornamento, ricarico...");
-                newWorker.postMessage("SKIP_WAITING");
-                
-                // Ricarica dopo 500ms
-                setTimeout(() => {
-                  window.location.reload();
-                }, 500);
-              }
-            }
-          });
-        });
-
-        // Quando il nuovo SW prende controllo
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener("controllerchange", () => {
-          if (refreshing) return;
-          refreshing = true;
-          window.location.reload();
-        });
-      })
-      .catch(err => console.error("[App] SW registration failed:", err));
-  });
-}
-
-//================================================================================================================================================
-
-
 const UNITA = {
   g:   { tipo: "peso",  base: "g",  fattore: 1 },
   kg:  { tipo: "peso",  base: "g",  fattore: 1000 },
@@ -514,5 +454,14 @@ document.addEventListener("input", e => {
     e.target.value = e.target.value.replace(/-/g, "");
   }
 });
+
+
+
+// FUORI CODICE ==================================================
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+
 
 
