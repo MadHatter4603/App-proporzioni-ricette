@@ -57,7 +57,7 @@ self.addEventListener("fetch", e => {
 
 
 // service-worker.js
-const CACHE = "ricette-v2.8"; // 🔑 Incrementa SEMPRE questa versione ad ogni modifica
+const CACHE = "ricette-v2.9"; // 🔑 Incrementa SEMPRE questa versione ad ogni modifica
 
 self.addEventListener("install", e => {
   console.log("[SW] Installing new version:", CACHE);
@@ -131,6 +131,7 @@ self.addEventListener("fetch", e => {
     caches.match(e.request).then(r => r || fetch(e.request))
   );
 });
+
 
 
 
