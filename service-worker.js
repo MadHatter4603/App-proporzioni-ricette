@@ -57,79 +57,75 @@ self.addEventListener("fetch", e => {
 
 
 // service-worker.js
-const CACHE = "ricette-v2.9"; // 🔑 Incrementa SEMPRE questa versione ad ogni modifica
+const CACHE = "ricette-v2.10"; // 🔑 CAMBIA SEMPRE QUESTO NUMERO
 
 self.addEventListener("install", e => {
-  console.log("[SW] Installing new version:", CACHE);
-  self.skipWaiting(); // Attiva subito il nuovo SW
+  console.log("[SW] Installing:", CACHE);
+  self.skipWaiting(); // Non aspettare, attiva subito
   
   e.waitUntil(
     caches.open(CACHE).then(c =>
       c.addAll([
-        ".",
-        "index.html",
-        "style.css",
-        "app.js",
-        // aggiungi altri file statici se necessario
-      ])
+        "./",
+        "./index.html",
+        "./style.css",
+        "./app.js"
+      ]).catch(err => console.error("[SW] Cache failed:", err))
     )
   );
 });
 
-self.addEventListener("activate", event => {
-  console.log("[SW] Activating new version:", CACHE);
+self.addEventListener("activate", e => {
+  console.log("[SW] Activating:", CACHE);
   
-  event.waitUntil(
-    caches.keys().then(names => {
+  e.waitUntil(
+    Promise.all([
       // Elimina TUTTE le vecchie cache
-      return Promise.all(
-        names
-          .filter(n => n !== CACHE)
-          .map(n => {
-            console.log("[SW] Deleting old cache:", n);
-            return caches.delete(n);
+      caches.keys().then(keys =>
+        Promise.all(
+          keys.filter(k => k !== CACHE).map(k => {
+            console.log("[SW] Deleting old cache:", k);
+            return caches.delete(k);
           })
-      );
-    })
+        )
+      ),
+      // Prendi controllo di tutte le pagine
+      self.clients.claim()
+    ])
   );
-  
-  // Prendi controllo di tutte le pagine aperte SUBITO
-  return self.clients.claim();
 });
 
 self.addEventListener("fetch", e => {
-  // Strategia Network-First per la navigazione (HTML)
-  if (e.request.mode === "navigate") {
-    e.respondWith(
-      fetch(e.request)
-        .then(r => {
-          const clone = r.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-          return r;
-        })
-        .catch(() => caches.match(e.request))
-    );
+  const url = new URL(e.request.url);
+  
+  // Ignora richieste esterne
+  if (url.origin !== location.origin) {
     return;
   }
   
-  // Strategia Network-First anche per CSS/JS (per avere sempre la versione fresca)
-  if (e.request.url.endsWith('.css') || e.request.url.endsWith('.js')) {
-    e.respondWith(
-      fetch(e.request)
-        .then(r => {
-          const clone = r.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-          return r;
-        })
-        .catch(() => caches.match(e.request))
-    );
-    return;
-  }
-  
-  // Cache-First per il resto (immagini, font, ecc.)
+  // ⚡ NETWORK FIRST per tutto (sempre la versione fresca)
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+    fetch(e.request)
+      .then(response => {
+        // Salva in cache solo se è una risposta valida
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return response;
+      })
+      .catch(() => {
+        // Fallback alla cache solo se offline
+        return caches.match(e.request);
+      })
   );
+});
+
+// Ascolta messaggi per forzare l'aggiornamento
+self.addEventListener("message", e => {
+  if (e.data === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 
