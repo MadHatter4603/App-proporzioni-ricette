@@ -1,3 +1,63 @@
+//==================================================================================================================================================
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("./service-worker.js")
+      .then(reg => {
+        console.log("[App] SW registrato");
+
+        // Forza controllo aggiornamenti SUBITO
+        reg.update();
+
+        // Controlla aggiornamenti quando torna visibile
+        document.addEventListener("visibilitychange", () => {
+          if (!document.hidden) {
+            reg.update();
+          }
+        });
+
+        // Se c'è un SW in attesa, attivalo
+        if (reg.waiting) {
+          reg.waiting.postMessage("SKIP_WAITING");
+        }
+
+        // Quando trova un aggiornamento
+        reg.addEventListener("updatefound", () => {
+          const newWorker = reg.installing;
+          
+          newWorker.addEventListener("statechange", () => {
+            // Quando il nuovo SW è pronto
+            if (newWorker.state === "installed") {
+              if (navigator.serviceWorker.controller) {
+                // C'è un vecchio SW, sostituiscilo
+                console.log("[App] Nuovo aggiornamento, ricarico...");
+                newWorker.postMessage("SKIP_WAITING");
+                
+                // Ricarica dopo 500ms
+                setTimeout(() => {
+                  window.location.reload();
+                }, 500);
+              }
+            }
+          });
+        });
+
+        // Quando il nuovo SW prende controllo
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
+      })
+      .catch(err => console.error("[App] SW registration failed:", err));
+  });
+}
+
+//================================================================================================================================================
+
+
 const UNITA = {
   g:   { tipo: "peso",  base: "g",  fattore: 1 },
   kg:  { tipo: "peso",  base: "g",  fattore: 1000 },
@@ -454,84 +514,5 @@ document.addEventListener("input", e => {
     e.target.value = e.target.value.replace(/-/g, "");
   }
 });
-
-
-
-// FUORI CODICE
-
-if ("serviceWorker" in navigator) {
-  let refreshing = false;
-
-  // Rileva quando un nuovo SW prende il controllo
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (refreshing) return;
-    refreshing = true;
-    console.log("[App] Nuovo Service Worker attivo, ricarico la pagina...");
-    window.location.reload();
-  });
-
-  // Registra il service worker
-  navigator.serviceWorker.register("service-worker.js").then(reg => {
-    console.log("[App] Service Worker registrato");
-
-    // Controlla aggiornamenti ogni 60 secondi
-    setInterval(() => {
-      reg.update();
-    }, 60000);
-
-    // Controlla aggiornamenti quando la pagina diventa visibile
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) {
-        reg.update();
-      }
-    });
-
-    // Se c'è un SW in attesa, attivalo subito
-    if (reg.waiting) {
-      console.log("[App] Nuovo SW in attesa, lo attivo...");
-      reg.waiting.postMessage({ type: "SKIP_WAITING" });
-    }
-
-    // Ascolta nuovi SW in attesa
-    reg.addEventListener("updatefound", () => {
-      const newWorker = reg.installing;
-      console.log("[App] Nuovo SW trovato, in installazione...");
-
-      newWorker.addEventListener("statechange", () => {
-        if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-          console.log("[App] Nuovo SW installato, lo attivo...");
-          newWorker.postMessage({ type: "SKIP_WAITING" });
-        }
-      });
-    });
-  });
-}
-
-// Opzionale: mostra un banner quando c'è un aggiornamento
-let updateAvailable = false;
-
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js").then(reg => {
-    reg.addEventListener("updatefound", () => {
-      const newWorker = reg.installing;
-      
-      newWorker.addEventListener("statechange", () => {
-        if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-          // Puoi mostrare un messaggio all'utente
-          updateAvailable = true;
-          
-          // Opzionale: mostra un toast/banner
-          // mostaBannerAggiornamento();
-          
-          // Oppure ricarica automaticamente dopo 2 secondi
-          setTimeout(() => {
-            newWorker.postMessage({ type: "SKIP_WAITING" });
-          }, 2000);
-        }
-      });
-    });
-  });
-}
-
 
 
