@@ -460,68 +460,75 @@ document.addEventListener("input", e => {
 // FUORI CODICE ==================================================
 
 if ("serviceWorker" in navigator) {
-  let isRefreshing = false;
+  const CURRENT_VERSION = "ricette-v2.13"; // Deve corrispondere alla versione nel service-worker.js
+  const lastReloadVersion = localStorage.getItem("lastReloadVersion");
   
-  // Deregistra tutti i SW vecchi prima di registrarne uno nuovo
-  navigator.serviceWorker.getRegistrations().then(registrations => {
-    registrations.forEach(registration => {
-      registration.unregister();
+  // Se abbiamo già ricaricato per questa versione, non farlo più
+  if (lastReloadVersion === CURRENT_VERSION) {
+    console.log('[App] Already reloaded for this version, skipping refresh logic');
+    
+    // Registra il SW normalmente senza logica di reload
+    navigator.serviceWorker.register("service-worker.js").then(registration => {
+      console.log('[App] SW registered (no refresh mode)');
     });
-  }).then(() => {
-    // Registra il nuovo SW
-    return navigator.serviceWorker.register("service-worker.js");
-  }).then(registration => {
-    console.log('[App] SW registered');
     
-    // Controlla aggiornamenti solo una volta all'apertura
-    registration.update();
+  } else {
+    // Prima volta con questa versione, abilita la logica di reload
+    console.log('[App] New version detected, enabling refresh logic');
     
-    // Gestisci gli aggiornamenti
-    registration.addEventListener("updatefound", () => {
-      const newWorker = registration.installing;
-      console.log('[App] New SW found');
+    let hasReloaded = false;
+    
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      registrations.forEach(registration => {
+        registration.unregister();
+      });
+    }).then(() => {
+      return navigator.serviceWorker.register("service-worker.js");
+    }).then(registration => {
+      console.log('[App] SW registered');
+      registration.update();
       
-      newWorker.addEventListener("statechange", () => {
-        console.log('[App] SW state:', newWorker.state);
-        if (newWorker.state === "activated" && !navigator.serviceWorker.controller) {
-          // Primo caricamento, non ricaricare
-          console.log('[App] First load, no reload needed');
-          return;
-        }
-        if (newWorker.state === "activated" && navigator.serviceWorker.controller && !isRefreshing) {
-          isRefreshing = true;
-          console.log('[App] New SW activated, reloading...');
-          window.location.reload();
-        }
+      registration.addEventListener("updatefound", () => {
+        const newWorker = registration.installing;
+        console.log('[App] New SW found');
+        
+        newWorker.addEventListener("statechange", () => {
+          console.log('[App] SW state:', newWorker.state);
+          if (newWorker.state === "activated" && navigator.serviceWorker.controller && !hasReloaded) {
+            hasReloaded = true;
+            localStorage.setItem("lastReloadVersion", CURRENT_VERSION);
+            console.log('[App] Reloading for version:', CURRENT_VERSION);
+            window.location.reload();
+          }
+        });
       });
     });
-  });
 
-  // Ascolta messaggi dal SW
-  navigator.serviceWorker.addEventListener("message", event => {
-    console.log('[App] Message from SW:', event.data);
-    if (event.data.type === "SW_UPDATED" && !isRefreshing) {
-      isRefreshing = true;
-      console.log('[App] SW updated to version:', event.data.version);
-      // Aspetta un attimo prima di ricaricare per evitare loop
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
-    }
-  });
+    navigator.serviceWorker.addEventListener("message", event => {
+      console.log('[App] Message from SW:', event.data);
+      if (event.data.type === "SW_UPDATED" && !hasReloaded) {
+        hasReloaded = true;
+        localStorage.setItem("lastReloadVersion", CURRENT_VERSION);
+        console.log('[App] Reloading for version:', event.data.version);
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      }
+    });
 
-  // Ascolta cambiamenti del controller
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (!isRefreshing) {
-      isRefreshing = true;
-      console.log('[App] Controller changed, reloading...');
-      // Aspetta un attimo prima di ricaricare
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
-    }
-  });
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!hasReloaded) {
+        hasReloaded = true;
+        localStorage.setItem("lastReloadVersion", CURRENT_VERSION);
+        console.log('[App] Controller changed, reloading once');
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      }
+    });
+  }
 }
+
 
 
 
