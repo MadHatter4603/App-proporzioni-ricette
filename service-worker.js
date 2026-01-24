@@ -14,7 +14,7 @@ self.addEventListener("fetch", e => {
   );
 });*/
 
-const CACHE = "ricette-v2.7";
+const CACHE = "ricette-v2.8";
 
 self.addEventListener("install", e => {
   self.skipWaiting();
@@ -54,5 +54,6 @@ self.addEventListener("fetch", e => {
     caches.match(e.request).then(r => r || fetch(e.request))
   );
 });
+
 
 
