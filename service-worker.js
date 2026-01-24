@@ -14,7 +14,7 @@ self.addEventListener("fetch", e => {
   );
 });*/
 
-const CACHE = "ricette-v2.16"; // Incrementa sempre!
+const CACHE = "ricette-v2.17"; // Incrementa sempre!
 const STATIC_ASSETS = [
   "style.css",
   "app.js"
@@ -110,6 +110,7 @@ self.addEventListener("fetch", event => {
     })
   );
 });
+
 
 
 
