@@ -461,7 +461,13 @@ document.addEventListener("input", e => {
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
+
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    window.location.reload();
+  });
 }
+
+
 
 
 
