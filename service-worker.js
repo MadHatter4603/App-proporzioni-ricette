@@ -14,7 +14,7 @@ self.addEventListener("fetch", e => {
   );
 });*/
 
-const CACHE = "ricette-v2.13"; // Incrementa la versione ad ogni nuova release/modifica
+const CACHE = "ricette-v2.13"; // Incrementa sempre!
 const STATIC_ASSETS = [
   "style.css",
   "app.js"
@@ -22,7 +22,8 @@ const STATIC_ASSETS = [
 
 // INSTALL
 self.addEventListener("install", event => {
-  self.skipWaiting();
+  console.log('[SW] Installing version:', CACHE);
+  self.skipWaiting(); // Forza l'attivazione immediata
   event.waitUntil(
     caches.open(CACHE).then(cache => {
       return cache.addAll(STATIC_ASSETS);
@@ -32,47 +33,84 @@ self.addEventListener("install", event => {
 
 // ACTIVATE
 self.addEventListener("activate", event => {
+  console.log('[SW] Activating version:', CACHE);
   event.waitUntil(
     caches.keys().then(keys => {
+      // Elimina TUTTE le cache vecchie
       return Promise.all(
-        keys
-          .filter(key => key !== CACHE)
-          .map(key => caches.delete(key))
+        keys.map(key => {
+          if (key !== CACHE) {
+            console.log('[SW] Deleting old cache:', key);
+            return caches.delete(key);
+          }
+        })
       );
     }).then(() => {
-      // Notifica tutti i client che il nuovo SW è attivo
+      console.log('[SW] Claiming clients');
+      return self.clients.claim();
+    }).then(() => {
+      // Notifica tutti i client
       return self.clients.matchAll();
     }).then(clients => {
-      clients.forEach(client => client.postMessage({ type: "SW_UPDATED" }));
+      clients.forEach(client => {
+        console.log('[SW] Notifying client');
+        client.postMessage({ type: "SW_UPDATED", version: CACHE });
+      });
     })
   );
-  self.clients.claim();
 });
 
 // FETCH
 self.addEventListener("fetch", event => {
-  // HTML → SEMPRE dalla rete
+  const url = new URL(event.request.url);
+  
+  // HTML → SEMPRE dalla rete con no-cache
   if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request, { cache: "no-store" })
-        .catch(() => caches.match("index.html"))
+      fetch(event.request, { 
+        cache: "no-store",
+        headers: { 'Cache-Control': 'no-cache' }
+      }).catch(() => caches.match("index.html"))
     );
     return;
   }
   
-  // Service Worker stesso → sempre aggiornato
-  if (event.request.url.includes("service-worker.js")) {
-    event.respondWith(fetch(event.request, { cache: "no-store" }));
+  // Service Worker stesso → MAI in cache
+  if (url.pathname.includes("service-worker.js")) {
+    event.respondWith(
+      fetch(event.request, { 
+        cache: "no-store",
+        headers: { 'Cache-Control': 'no-cache' }
+      })
+    );
     return;
   }
   
-  // Asset statici → cache-first
+  // Asset statici (CSS, JS) → Network-first con cache fallback
+  if (url.pathname.endsWith('.css') || url.pathname.endsWith('.js')) {
+    event.respondWith(
+      fetch(event.request, { cache: "reload" })
+        .then(response => {
+          // Clona e salva in cache la nuova versione
+          const responseClone = response.clone();
+          caches.open(CACHE).then(cache => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+  
+  // Altri asset → cache-first
   event.respondWith(
     caches.match(event.request).then(response => {
       return response || fetch(event.request);
     })
   );
 });
+
 
 
 
