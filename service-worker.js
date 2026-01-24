@@ -14,8 +14,7 @@ self.addEventListener("fetch", e => {
   );
 });*/
 
-const CACHE = "ricette-v2.12";
-
+const CACHE = "ricette-v2.13"; // Incrementa la versione ad ogni nuova release/modifica
 const STATIC_ASSETS = [
   "style.css",
   "app.js"
@@ -40,6 +39,11 @@ self.addEventListener("activate", event => {
           .filter(key => key !== CACHE)
           .map(key => caches.delete(key))
       );
+    }).then(() => {
+      // Notifica tutti i client che il nuovo SW è attivo
+      return self.clients.matchAll();
+    }).then(clients => {
+      clients.forEach(client => client.postMessage({ type: "SW_UPDATED" }));
     })
   );
   self.clients.claim();
@@ -47,7 +51,6 @@ self.addEventListener("activate", event => {
 
 // FETCH
 self.addEventListener("fetch", event => {
-
   // HTML → SEMPRE dalla rete
   if (event.request.mode === "navigate") {
     event.respondWith(
@@ -56,7 +59,13 @@ self.addEventListener("fetch", event => {
     );
     return;
   }
-
+  
+  // Service Worker stesso → sempre aggiornato
+  if (event.request.url.includes("service-worker.js")) {
+    event.respondWith(fetch(event.request, { cache: "no-store" }));
+    return;
+  }
+  
   // Asset statici → cache-first
   event.respondWith(
     caches.match(event.request).then(response => {
@@ -64,6 +73,7 @@ self.addEventListener("fetch", event => {
     })
   );
 });
+
 
 
 
