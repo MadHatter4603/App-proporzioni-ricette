@@ -14,44 +14,54 @@ self.addEventListener("fetch", e => {
   );
 });*/
 
-const CACHE = "ricette-v2.9";
+const CACHE = "ricette-v2.7";
 
-self.addEventListener("install", e => {
+const STATIC_ASSETS = [
+  "style.css",
+  "app.js"
+];
+
+// INSTALL
+self.addEventListener("install", event => {
   self.skipWaiting();
-  e.waitUntil(
-    caches.open(CACHE).then(c =>
-      c.addAll([".", "index.html", "style.css", "app.js"])
-    )
+  event.waitUntil(
+    caches.open(CACHE).then(cache => {
+      return cache.addAll(STATIC_ASSETS);
+    })
   );
 });
 
+// ACTIVATE
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(names =>
-      Promise.all(
-        names.filter(n => n !== CACHE).map(n => caches.delete(n))
-      )
-    )
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys
+          .filter(key => key !== CACHE)
+          .map(key => caches.delete(key))
+      );
+    })
   );
   self.clients.claim();
 });
 
-self.addEventListener("fetch", e => {
-  if (e.request.mode === "navigate") {
-    e.respondWith(
-      fetch(e.request)
-        .then(r => {
-          const clone = r.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-          return r;
-        })
-        .catch(() => caches.match(e.request))
+// FETCH
+self.addEventListener("fetch", event => {
+
+  // HTML → SEMPRE dalla rete
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request, { cache: "no-store" })
+        .catch(() => caches.match("index.html"))
     );
     return;
   }
 
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+  // Asset statici → cache-first
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    })
   );
 });
 
