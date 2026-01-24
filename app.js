@@ -460,7 +460,7 @@ document.addEventListener("input", e => {
 // FUORI CODICE ==================================================
 
 if ("serviceWorker" in navigator) {
-  const CURRENT_VERSION = "ricette-v2.18"; // Deve corrispondere alla versione nel service-worker.js
+  const CURRENT_VERSION = "ricette-v2.19"; // Deve corrispondere alla versione nel service-worker.js
   const lastReloadVersion = localStorage.getItem("lastReloadVersion");
   
   // Se abbiamo già ricaricato per questa versione, non farlo più
@@ -528,6 +528,7 @@ if ("serviceWorker" in navigator) {
     });
   }
 }
+
 
 
 
