@@ -14,7 +14,7 @@ self.addEventListener("fetch", e => {
   );
 });*/
 
-const CACHE = "ricette-v2.11";
+const CACHE = "ricette-v2.12";
 
 const STATIC_ASSETS = [
   "style.css",
@@ -64,6 +64,7 @@ self.addEventListener("fetch", event => {
     })
   );
 });
+
 
 
 
