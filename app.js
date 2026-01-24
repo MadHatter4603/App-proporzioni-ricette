@@ -461,26 +461,20 @@ document.addEventListener("input", e => {
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js").then(registration => {
-    // Controlla aggiornamenti ogni volta che la pagina viene caricata
     registration.update();
-    
-    // Quando trova un nuovo SW in attesa, attivalo subito
-    registration.addEventListener("updatefound", () => {
-      const newWorker = registration.installing;
-      newWorker.addEventListener("statechange", () => {
-        if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-          // Nuovo SW disponibile, ricarica la pagina
-          window.location.reload();
-        }
-      });
-    });
   });
 
-  // Ascolta i cambiamenti del controller
+  navigator.serviceWorker.addEventListener("message", event => {
+    if (event.data.type === "SW_UPDATED") {
+      window.location.reload();
+    }
+  });
+
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     window.location.reload();
   });
 }
+
 
 
 
