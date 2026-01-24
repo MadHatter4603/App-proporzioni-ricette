@@ -460,6 +460,8 @@ document.addEventListener("input", e => {
 // FUORI CODICE ==================================================
 
 if ("serviceWorker" in navigator) {
+  let isRefreshing = false;
+  
   // Deregistra tutti i SW vecchi prima di registrarne uno nuovo
   navigator.serviceWorker.getRegistrations().then(registrations => {
     registrations.forEach(registration => {
@@ -471,12 +473,7 @@ if ("serviceWorker" in navigator) {
   }).then(registration => {
     console.log('[App] SW registered');
     
-    // Forza controllo aggiornamenti ogni 10 secondi
-    setInterval(() => {
-      registration.update();
-    }, 10000);
-    
-    // Controlla subito
+    // Controlla aggiornamenti solo una volta all'apertura
     registration.update();
     
     // Gestisci gli aggiornamenti
@@ -486,7 +483,13 @@ if ("serviceWorker" in navigator) {
       
       newWorker.addEventListener("statechange", () => {
         console.log('[App] SW state:', newWorker.state);
-        if (newWorker.state === "activated") {
+        if (newWorker.state === "activated" && !navigator.serviceWorker.controller) {
+          // Primo caricamento, non ricaricare
+          console.log('[App] First load, no reload needed');
+          return;
+        }
+        if (newWorker.state === "activated" && navigator.serviceWorker.controller && !isRefreshing) {
+          isRefreshing = true;
           console.log('[App] New SW activated, reloading...');
           window.location.reload();
         }
@@ -497,22 +500,29 @@ if ("serviceWorker" in navigator) {
   // Ascolta messaggi dal SW
   navigator.serviceWorker.addEventListener("message", event => {
     console.log('[App] Message from SW:', event.data);
-    if (event.data.type === "SW_UPDATED") {
+    if (event.data.type === "SW_UPDATED" && !isRefreshing) {
+      isRefreshing = true;
       console.log('[App] SW updated to version:', event.data.version);
-      window.location.reload();
+      // Aspetta un attimo prima di ricaricare per evitare loop
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     }
   });
 
   // Ascolta cambiamenti del controller
-  let refreshing = false;
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (!refreshing) {
-      refreshing = true;
+    if (!isRefreshing) {
+      isRefreshing = true;
       console.log('[App] Controller changed, reloading...');
-      window.location.reload();
+      // Aspetta un attimo prima di ricaricare
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     }
   });
 }
+
 
 
 
