@@ -9,7 +9,7 @@
 
 body {
   margin: 0;
-  background: green;
+  background: red;
   color: white;
   font-family: Arial, sans-serif;
 }
@@ -244,6 +244,7 @@ button {
     background-color: #d3d3d3; /* lo stesso che già usi */
   }
 }
+
 
 
 
