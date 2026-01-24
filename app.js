@@ -460,20 +460,60 @@ document.addEventListener("input", e => {
 // FUORI CODICE ==================================================
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js").then(registration => {
+  // Deregistra tutti i SW vecchi prima di registrarne uno nuovo
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    registrations.forEach(registration => {
+      registration.unregister();
+    });
+  }).then(() => {
+    // Registra il nuovo SW
+    return navigator.serviceWorker.register("service-worker.js");
+  }).then(registration => {
+    console.log('[App] SW registered');
+    
+    // Forza controllo aggiornamenti ogni 10 secondi
+    setInterval(() => {
+      registration.update();
+    }, 10000);
+    
+    // Controlla subito
     registration.update();
+    
+    // Gestisci gli aggiornamenti
+    registration.addEventListener("updatefound", () => {
+      const newWorker = registration.installing;
+      console.log('[App] New SW found');
+      
+      newWorker.addEventListener("statechange", () => {
+        console.log('[App] SW state:', newWorker.state);
+        if (newWorker.state === "activated") {
+          console.log('[App] New SW activated, reloading...');
+          window.location.reload();
+        }
+      });
+    });
   });
 
+  // Ascolta messaggi dal SW
   navigator.serviceWorker.addEventListener("message", event => {
+    console.log('[App] Message from SW:', event.data);
     if (event.data.type === "SW_UPDATED") {
+      console.log('[App] SW updated to version:', event.data.version);
       window.location.reload();
     }
   });
 
+  // Ascolta cambiamenti del controller
+  let refreshing = false;
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    window.location.reload();
+    if (!refreshing) {
+      refreshing = true;
+      console.log('[App] Controller changed, reloading...');
+      window.location.reload();
+    }
   });
 }
+
 
 
 
