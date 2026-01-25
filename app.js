@@ -536,7 +536,7 @@ function calcola() {
   if (almenoUnoZero) {
     const bannerNotifica = document.querySelector(".banner-notifica");
     bannerNotifica.classList.add("sad");
-    mostraBanner("Non hai abbastanza ingredienti per fare questa ricetta 😔");
+    mostraBanner("Non hai abbastanza ingredienti per fare questa ricetta :(");
   }
 }
 
@@ -1794,7 +1794,7 @@ document.addEventListener("input", e => {
 // FUORI CODICE ==================================================
 
 if ("serviceWorker" in navigator) {
-  const CURRENT_VERSION = "ricette-v3.4"; // Deve corrispondere alla versione nel service-worker.js
+  const CURRENT_VERSION = "ricette-v3.5"; // Deve corrispondere alla versione nel service-worker.js
   const lastReloadVersion = localStorage.getItem("lastReloadVersion");
   
   // Se abbiamo già ricaricato per questa versione, non farlo più
@@ -1862,6 +1862,7 @@ if ("serviceWorker" in navigator) {
     });
   }
 }
+
 
 
 
