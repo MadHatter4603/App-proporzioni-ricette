@@ -1,20 +1,4 @@
-/*const CACHE = "ricette-v2.7";
-
-self.addEventListener("install", e => {
-  e.waitUntil(
-    caches.open(CACHE).then(c =>
-      c.addAll([".", "index.html", "style.css", "app.js"])
-    )
-  );
-});
-
-self.addEventListener("fetch", e => {
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
-  );
-});*/
-
-const CACHE = "ricette-v3.4"; // Incrementa
+const CACHE = "ricette-v3.5"; // Incrementa
 const STATIC_ASSETS = [
   "style.css",
   "app.js"
@@ -110,6 +94,7 @@ self.addEventListener("fetch", event => {
     })
   );
 });
+
 
 
 
