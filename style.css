@@ -520,7 +520,6 @@ button {
 .ricetta-swipe {
   position: relative;
   border-radius: 6px;
-  touch-action: none;
 }
 
 /* area delete */
@@ -754,6 +753,10 @@ button {
 
 body.dragging {
   overflow: hidden;
+  touch-action: none;
+}
+
+.ricetta-swipe.dragging{
   touch-action: none;
 }
 
@@ -1067,6 +1070,7 @@ body.no-scroll {
     background-color: #d3d3d3; /* lo stesso che già usi */
   }
 }
+
 
 
 
