@@ -553,6 +553,7 @@ button {
   align-items: flex-start;
   gap: 14px;
   transition: transform 0.2s ease;
+  touch-action: pan-y;
 }
 
 /* lato sinistro */
@@ -581,6 +582,7 @@ button {
   color: #777;
   user-select: none;
   margin-top: 2px;
+  touch-action: none;
 }
 
 .drag-handle:active {
@@ -1070,6 +1072,7 @@ body.no-scroll {
     background-color: #d3d3d3; /* lo stesso che già usi */
   }
 }
+
 
 
 
