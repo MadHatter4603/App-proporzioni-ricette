@@ -291,7 +291,7 @@ function mostraErroreUnita(select) {
   if (!msg) {
     msg = document.createElement("div");
     msg.className = "errore-unita";
-    msg.textContent = "Unità di misura incongruente!";
+    msg.textContent = "Unità incongruenti!";
     campo.appendChild(msg);
   }
 
@@ -1794,7 +1794,7 @@ document.addEventListener("input", e => {
 // FUORI CODICE ==================================================
 
 if ("serviceWorker" in navigator) {
-  const CURRENT_VERSION = "ricette-v3.0"; // Deve corrispondere alla versione nel service-worker.js
+  const CURRENT_VERSION = "ricette-v3.1"; // Deve corrispondere alla versione nel service-worker.js
   const lastReloadVersion = localStorage.getItem("lastReloadVersion");
   
   // Se abbiamo già ricaricato per questa versione, non farlo più
@@ -1862,4 +1862,5 @@ if ("serviceWorker" in navigator) {
     });
   }
 }
+
 
