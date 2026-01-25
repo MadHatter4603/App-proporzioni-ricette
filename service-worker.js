@@ -14,7 +14,7 @@ self.addEventListener("fetch", e => {
   );
 });*/
 
-const CACHE = "ricette-v3.0"; // Incrementa
+const CACHE = "ricette-v3.1"; // Incrementa
 const STATIC_ASSETS = [
   "style.css",
   "app.js"
@@ -110,6 +110,7 @@ self.addEventListener("fetch", event => {
     })
   );
 });
+
 
 
 
