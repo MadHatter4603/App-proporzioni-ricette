@@ -8,27 +8,179 @@
   <meta name="theme-color" content="#000000">
 </head>
 <body>
+<!---------- FUORI CODICE ---------->
 
 
 <div class="app">
-  <h1>Calcolatore per Ricette</h1>
   
-  <div class="salvataggio">
-    <input id="nomeRicetta" placeholder="Nome ricetta">
-    <button onclick="salvaRicetta()">💾 Salva</button>
+  <!-- BANNER NOTIFICA -->
+  <div id="banner-notifica" class="banner-notifica nascosto">
+    <span id="banner-testo"></span>
+    <button class="chiudi-banner" aria-label="Chiudi">×</button>
   </div>
+
+  <!-- HEADER FISSO -->
+  <header class="topbar">
+    <button class="hamburger" onclick="apriMenu()">☰</button>
+    <div class="divider"></div>
+    <h1 id="titoloPagina">Calcolatore per Ricette</h1>
+  </header>
+
+  <!-- OVERLAY + MENU -->
+  <div class="overlay" onclick="chiudiMenu()"></div>
+
+  <nav class="menu">
+    <div class="menu-content">
+      <h3>Menu</h3>
+      <button onclick="vaiAPagina('home', 'Calcolatore per Ricette')">🔢 Calcolatore</button>
+      <button onclick="vaiAPagina('ricette', 'Ricette salvate')">📚 Ricette salvate</button>
+      <button onclick="vaiAPagina('equivalenze', 'Conversioni')">📏 Conversioni</button>
+      <button onclick="vaiAPagina('timer', 'Timer')">⏰ Timer</button>
+      <button onclick="vaiAPagina('segnalazioni', 'Segnalazioni')">📝 Segnalazioni</button>
+      <!-- future pagine -->
+    </div>
+    <div class="menu-footer">
+      2026 – Dario Pazienza
+    </div>
+  </nav>
   
-  <div id="ingredienti"></div>
+  
 
-  <button class="add" onclick="aggiungiRiga()">+</button>
+  <!-- PAGINE -->
+  <main>
 
-  <button class="calcola" onclick="calcola()">Calcola nuove proporzioni</button>
-  <select id="listaRicette" onchange="caricaRicetta()">
-    <option value="">-- Ricette salvate --</option>
-  </select> 
+    <!-- HOME -->
+    <section class="pagina attiva" id="home">
+      <div class="salvataggio">
+        <div class="salvataggio-input">
+          <div class="nome-wrapper">
+            <button class="btn-reset" onclick="resetQuantita()">🔄</button>
+            <input id="nomeRicetta" placeholder="Nome ricetta">  
+          </div>
+          <div id="nome-ricetta-error"></div>
+        </div>
+        <button onclick="salvaRicetta()">💾 Salva</button>
+      </div>
+      
+      <!-- BLOCCO PORZIONI -->
+      <div class="calcolatore-porzioni">
+
+        <!-- SINISTRA -->
+        <div class="porzioni-col">
+          <div class="porzioni-label">Sarebbe per:</div>
+
+          <div class="porzioni-input">
+            <input type="number" min="1" max="99" value="1" step="1" class="input-porzioni-calc input-sarebbe-num">
+            <select class="select-porzioni-calc select-sarebbe-tipo">
+              <option value="porzioni">porzioni</option>
+              <option value="persone">persone</option>
+              <option value="pezzi">pezzi</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- SEPARATORE -->
+        <div class="porzioni-divider"></div>
+
+        <!-- DESTRA -->
+        <div class="porzioni-col">
+          <div class="porzioni-label">Vorrei / Posso fare:</div>
+
+          <div class="porzioni-input">
+            <input type="number" min="1" step="1" max="99" class="input-porzioni-calc input-vorrei-num">
+            <select class="select-porzioni-calc select-vorrei-tipo">
+              <option value="porzioni">porzioni</option>
+              <option value="persone">persone</option>
+              <option value="pezzi">pezzi</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="ingredienti"></div>
+
+      <button class="add" onclick="aggiungiRiga()">+</button>
+
+      <button class="calcola" onclick="calcola()">Calcola nuove proporzioni</button>
+
+    </section>
+
+    <!-- RICETTE SALVATE -->
+    <section class="pagina" id="ricette">
+      <div class="ricette-search">
+        <input
+          type="text"
+          id="ricette-search-input"
+          placeholder="Cerca ricetta…"
+        >
+      </div>
+      <div id="lista-ricette-pagina" class="lista-ricette"></div>
+    </section>
+
+    <!-- CONVERSIONI -->
+    <section class="pagina" id="equivalenze">
+      <p>Coming Soon!</p>
+    </section>
+    
+    <!-- TIMER -->
+    <section class="pagina" id="timer">
+      <p>Coming Soon!</p>
+    </section>
+    
+    <!-- SEGNALAZIONI -->
+    <section class="pagina" id="segnalazioni">
+      <p>Hai trovato un problema o vuoi suggerire miglioramenti?</p>
+      <a href="https://forms.gle/YqQvXbDP6EZrBLjx7" target="_blank" class="btn-segnalazione">
+        Invia una segnalazione
+      </a>
+    </section>
+
+  </main>
+  
+  <div id="popup-overlay" class="popup-overlay hidden">
+    <div class="popup-ricetta">
+
+      <!-- POPUP HEADER -->
+      <div class="popup-header">
+        <span class="popup-title"></span>
+
+        <div class="popup-porzioni">
+          x
+          <input type="number" min="1" step="1" max="99" class="input-porzioni">
+          <select class="select-porzioni-tipo">
+            <option value="porzioni">porzioni</option>
+            <option value="persone">persone</option>
+            <option value="pezzi">pezzi</option>
+          </select>
+
+        </div>
+      </div>
+
+      <!-- LINK -->
+      <input class="popup-link" placeholder="Link ricetta:">
+
+      <!-- INGREDIENTI -->
+      <div class="popup-ingredienti"></div>
+      <button class="popup-add">+</button>
+
+      <!-- NOTE -->
+      <textarea class="popup-note" placeholder="Note..."></textarea>
+
+      <!-- FOOTER -->
+      <div class="popup-footer">
+        <button class="popup-annulla">Annulla</button>
+        <button class="popup-salva">Salva</button>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 
 
+<!---------- FUORI CODICE ---------->
 <script src="app.js"></script>
 </body>
 </html>
+
