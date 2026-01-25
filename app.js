@@ -1200,7 +1200,7 @@ function abilitaSwipe(wrapper, card) {
   let canSwipe = false; // 🔑 permetti swipe solo dalla zona giusta
   
   const RIGHT_ZONE_RATIO = 0.5;
-  const maxSwipe = card.offsetWidth * 0.5;
+  const maxSwipe = card.offsetWidth * 0.4;
   const deleteThreshold = maxSwipe * 0.6;
   const MOVE_THRESHOLD = 10;
 
@@ -1238,7 +1238,7 @@ function abilitaSwipe(wrapper, card) {
     const deltaY = Math.abs(e.clientY - startY);
 
     // se movimento verticale eccessivo, annulla
-    if (deltaY > 15) {
+    if (deltaY > Math.abs(deltaX) * 1.2) {
       canSwipe = false;
       swiping = false;
       card.style.transform = "translateX(0)";
@@ -1794,7 +1794,7 @@ document.addEventListener("input", e => {
 // FUORI CODICE ==================================================
 
 if ("serviceWorker" in navigator) {
-  const CURRENT_VERSION = "ricette-v3.3"; // Deve corrispondere alla versione nel service-worker.js
+  const CURRENT_VERSION = "ricette-v3.4"; // Deve corrispondere alla versione nel service-worker.js
   const lastReloadVersion = localStorage.getItem("lastReloadVersion");
   
   // Se abbiamo già ricaricato per questa versione, non farlo più
@@ -1862,6 +1862,7 @@ if ("serviceWorker" in navigator) {
     });
   }
 }
+
 
 
 
