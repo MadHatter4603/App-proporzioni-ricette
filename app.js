@@ -938,6 +938,12 @@ function togglePreferito(id) {
 
 // Salva l'ordine delle ricette dal DOM
 function salvaOrdineDaDOM() {
+  const filtro = leggiFiltroRicette();
+  if (filtro) {
+    // NON salvare ordine se la lista è filtrata
+    return;
+  }
+  
   const wrappers = document.querySelectorAll(".ricetta-swipe");
   const ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
   const nuovaLista = [];
@@ -1759,7 +1765,7 @@ document.addEventListener("input", e => {
 // FUORI CODICE ==================================================
 
 if ("serviceWorker" in navigator) {
-  const CURRENT_VERSION = "ricette-v3.5.0"; // Deve corrispondere alla versione nel service-worker.js
+  const CURRENT_VERSION = "ricette-v3.5.1"; // Deve corrispondere alla versione nel service-worker.js
   const lastReloadVersion = localStorage.getItem("lastReloadVersion");
   
   // Se abbiamo già ricaricato per questa versione, non farlo più
@@ -1827,6 +1833,7 @@ if ("serviceWorker" in navigator) {
     });
   }
 }
+
 
 
 
