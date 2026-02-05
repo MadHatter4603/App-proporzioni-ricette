@@ -1,14 +1,18 @@
-const UNITA = {
-  g:   { tipo: "peso",  base: "g",  fattore: 1 },
-  kg:  { tipo: "peso",  base: "g",  fattore: 1000 },
+// ======================================================
+// 1. COSTANTI E CONFIGURAZIONE
+// ======================================================
 
+// Unità di misura supportate con fattori di conversione 
+const UNITA = {
+  g:   { tipo: "peso",   base: "g",  fattore: 1 },
+  kg:  { tipo: "peso",   base: "g",  fattore: 1000 },
   ml:  { tipo: "volume", base: "ml", fattore: 1 },
   l:   { tipo: "volume", base: "ml", fattore: 1000 },
-
-  pz:  { tipo: "pezzi", base: "pz", fattore: 1 },
-  qb:  { tipo: "qb",    base: "qb", fattore: 1 }
+  pz:  { tipo: "pezzi",  base: "pz", fattore: 1 },
+  qb:  { tipo: "qb",     base: "qb", fattore: 1 }
 };
 
+// Numero di decimali per ogni unità di misura
 const DECIMALI_UNITA = {
   g: 0,
   ml: 0,
@@ -18,157 +22,119 @@ const DECIMALI_UNITA = {
   qb: null
 };
 
+// Limiti per le porzioni
+const LIMITI_PORZIONI = {
+  MIN: 1,
+  MAX: 99
+};
 
-function aggiungiRiga(nome = "", originale = "", unita = "g", hai = "", unitaHai = "g") {
-  const contenitore = document.getElementById("ingredienti");
+// Configurazione gesture swipe
+const CONFIG_SWIPE = {
+  ZONA_DESTRA_RATIO: 0.5, // Zona da cui iniziare lo swipe (50% a destra)
+  MAX_SWIPE_RATIO: 0.4, // Massimo swipe possibile (40% della larghezza)
+  SOGLIA_ELIMINAZIONE: 0.6, // Soglia per eliminazione (60% del max swipe)
+  SOGLIA_MOVIMENTO: 10, // Pixel minimi per attivare lo swipe
+  SOGLIA_VERTICALE_RATIO: 1.2 // Tolleranza movimento verticale vs orizzontale
+};
 
-  const riga = document.createElement("div");
-  riga.className = "riga";
+// Configurazione drag & drop
+const CONFIG_DRAG = {
+  GAP_CARD: 10, // Gap tra le card durante il drag
+  ZONA_AUTO_SCROLL: 80, // Pixel dal bordo per auto-scroll
+  VELOCITA_SCROLL_MAX: 10 // Velocità massima auto-scroll
+};
 
-  riga.innerHTML = `
-    <button class="remove" onclick="this.parentElement.remove()">−</button>
+// Timing e animazioni
+const TIMING = {
+  DURATA_BANNER: 3000, // Durata notifica banner (ms)
+  ANIMAZIONE_FADE: 600, // Durata fade-out banner (ms)
+  ANIMAZIONE_PULSE: 600, // Durata pulse su input modificato (ms)
+  RITARDO_EDIT_EXIT: 100, // Ritardo dopo uscita da editing (ms)
+  PADDING_SCROLL_CURSOR: 12 // Padding per auto-scroll del cursore
+};
 
-    <input
-      class="nome"
-      placeholder="Ingrediente"
-      value="${nome}"
-    >
+// Dimensioni UI
+const UI = {
+  LARGHEZZA_MENU: "-260px"      // Larghezza menu laterale
+};
 
-    <!-- QUANTITÀ -->
-    <div class="campo-unita quantita">
-      <input
-        class="originale"
-        type="text"
-        inputmode="decimal"
-        pattern="[0-9.,]*"
-        placeholder="Quantità"
-        value="${originale != null ? originale : ""}"
-      >
+//Chiavi localStorage
+const STORAGE_KEYS = {
+  RICETTE: "ricette"
+};
 
-      <select class="unita">
-        <option value="g">g</option>
-        <option value="kg">kg</option>
-        <option value="ml">ml</option>
-        <option value="l">l</option>
-        <option value="pz">pz.</option>
-        <option value="qb">q.b.</option>
-      </select>
-    </div>
+// Messaggi di errore
+const MESSAGGI_ERRORE = {
+  NUMERO_NON_VALIDO: "Inserire numero valido!",
+  INGREDIENTE_NON_VALIDO: "Inserire ingrediente valido!",
+  NOME_RICETTA_VUOTO: "Inserire nome ricetta.",
+  NOME_RICETTA_DUPLICATO: "Nome ricetta già esistente.",
+  UNITA_INCONGRUENTI: "Unità incongruenti!",
+  QUANTITA_NON_VALIDA: "Quantità non valida!",
+  NESSUNA_QUANTITA: "Nessuna quantità da ricalcolare!",
+  NESSUN_INGREDIENTE: "Nessun ingrediente valido",
+  INGREDIENTI_INSUFFICIENTI: "Non hai abbastanza ingredienti per fare questa ricetta :(",
+  RICETTA_NON_TROVATA: "Ricetta non trovata"
+};
 
-    <!-- TU HAI -->
-    <div class="campo-unita tu-hai">
-      <input
-        class="disponibile"
-        type="text"
-        inputmode="decimal"
-        pattern="[0-9.,]*"
-        placeholder="Tu hai"
-        value="${hai != null ? hai : ""}"
-      >
+// Messaggi di conferma
+const MESSAGGI_CONFERMA = {
+  RESET_QUANTITA: "Svuotare le caselle con le quantità possedute?",
+  ELIMINA_RICETTA: "Eliminare questa ricetta?"
+};
 
-      <select class="unita-hai">
-        <option value="g">g</option>
-        <option value="kg">kg</option>
-        <option value="ml">ml</option>
-        <option value="l">l</option>
-        <option value="pz">pz.</option>
-        <option value="qb">q.b.</option>
-      </select>
-    </div>
-  `;
-
-  contenitore.appendChild(riga);
-    
-  /* =============================
-   RESET ERRORE NOME INGREDIENTE
-   ============================= */
-    const nomeInput = riga.querySelector(".nome");
-
-    nomeInput.addEventListener("input", () => {
-      nomeInput.classList.remove("input-errore");
-
-      const errore = nomeInput.parentElement.querySelector(".errore-nome");
-      if (errore) errore.remove();
-    });
-
-  /* =============================
-     IMPOSTAZIONE UNITÀ SALVATE
-     ============================= */
-  const selectOrig = riga.querySelector(".unita");
-  const selectHai = riga.querySelector(".unita-hai");
-
-  selectOrig.value = unita;
-  selectHai.value = unitaHai || unita;
-  
-  selectOrig.addEventListener("change", () => {
-    rimuoviErroreUnita(riga);
-  });
-  selectHai.addEventListener("change", () => {
-    rimuoviErroreUnita(riga);
-  });
-
-  /* =============================
-     GESTIONE q.b.
-     ============================= */
-  selectOrig.addEventListener("change", () => {
-    aggiornaStatoInputQB(riga);
-  });
-
-  // applica subito lo stato corretto
-  aggiornaStatoInputQB(riga);
-}
+// Messaggi di successo
+const MESSAGGI_SUCCESSO = {
+  RICETTA_SALVATA: "Ricetta salvata ✔️"
+};
 
 
-// righe iniziali
-aggiungiRiga();
-aggiungiRiga();
+// ======================================================
+// 2. UTILITY - Parsing e Conversioni
+// ======================================================
 
-limitaInputPorzioni();
-
-//=====================================================
-// per togliere l'errore sul nome della ricetta in fase di input
-const nomeRicettaInput = document.getElementById("nomeRicetta");
-const nomeRicettaErrore = document.getElementById("nome-ricetta-error");
-
-if (nomeRicettaInput) {
-  nomeRicettaInput.addEventListener("input", () => {
-    nomeRicettaInput.classList.remove("error");
-    if (nomeRicettaErrore) {
-      nomeRicettaErrore.textContent = "";
-    }
-  });
-}
-//=====================================================
-
-
+/**
+ * Converte una stringa in numero, gestendo virgole e punti
+ * @param {string} valore - Stringa da convertire
+ * @returns {number} - Numero convertito o NaN
+ */
 function leggiNumero(valore) {
   if (valore === "") return NaN;
-
-  // sostituisce la virgola con il punto
   const normalizzato = valore.replace(",", ".");
-
-  // rifiuta numeri che finiscono con "."
   if (normalizzato.endsWith(".")) return NaN;
-
   return parseFloat(normalizzato);
 }
 
-
+/**
+ * Converte un valore nell'unità base
+ * @param {number} valore - Valore da convertire
+ * @param {string} unita - Unità di partenza
+ * @returns {number|null} - Valore in unità base o null se qb
+ */
 function toBase(valore, unita) {
   const info = UNITA[unita];
   if (!info || info.base === "qb") return null;
-
   return valore * info.fattore;
 }
 
+/**
+ * Converte un valore dall'unità base all'unità desiderata
+ * @param {number} valoreBase - Valore in unità base
+ * @param {string} unita - Unità di destinazione
+ * @returns {number|null} - Valore convertito o null se qb
+ */
 function fromBase(valoreBase, unita) {
   const info = UNITA[unita];
   if (!info || info.base === "qb") return null;
-
   return valoreBase / info.fattore;
 }
 
-
+/**
+ * Normalizza un valore in base all'unità più appropriata
+ * @param {number} valoreBase - Valore in unità base
+ * @param {string} tipo - Tipo di misura (peso, volume, pezzi)
+ * @returns {Object} - {valore, unita}
+ */
 function normalizzaUnita(valoreBase, tipo) {
   if (tipo === "peso") {
     if (valoreBase >= 1000) return { valore: valoreBase / 1000, unita: "kg" };
@@ -187,174 +153,445 @@ function normalizzaUnita(valoreBase, tipo) {
   return { valore: valoreBase, unita: null };
 }
 
+/**
+ * Formatta un valore con il numero di decimali appropriato
+ * @param {number} valore - Valore da formattare
+ * @param {string} unita - Unità di misura
+ * @returns {string|number} - Valore formattato
+ */
 function formattaValore(valore, unita) {
   const decimali = DECIMALI_UNITA[unita];
-
-  if (decimali === null || decimali === undefined) {
-    return "";
-  }
-
+  if (decimali === null || decimali === undefined) return "";
   return Number(valore.toFixed(decimali));
 }
 
 
+// ======================================================
+// 3. UTILITY - DOM e Scroll
+// ======================================================
+
+/**
+ * Calcola la larghezza della scrollbar
+ * @returns {number} - Larghezza in pixel
+ */
+function getScrollbarWidth() {
+  return window.innerWidth - document.documentElement.clientWidth;
+}
+
+/**
+ * Posiziona il cursore alla fine di un elemento contentEditable
+ * @param {HTMLElement} el - Elemento da manipolare
+ */
+function placeCaretAtEnd(el) {
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+/**
+ * Auto-scroll per mantenere il cursore visibile durante la digitazione
+ * @param {HTMLElement} el - Elemento contentEditable
+ */
+function autoScrollCursor(el) {
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return;
+
+  const range = selection.getRangeAt(0).cloneRange();
+  const rect = range.getBoundingClientRect();
+  const elRect = el.getBoundingClientRect();
+  const padding = TIMING.PADDING_SCROLL_CURSOR;
+
+  if (rect.right > elRect.right - padding) {
+    el.scrollLeft += rect.right - elRect.right + padding;
+  } else if (rect.left < elRect.left + padding) {
+    el.scrollLeft -= elRect.left + padding - rect.left;
+  }
+}
+
+/**
+ * Abilita l'auto-scroll su un elemento durante l'editing
+ * @param {HTMLElement} el - Elemento contentEditable
+ */
+function enableAutoScrollOnEdit(el) {
+  el.addEventListener("keyup", () => autoScrollCursor(el));
+  el.addEventListener("click", () => autoScrollCursor(el));
+}
+
+/**
+ * Esegue una callback preservando la posizione di scroll
+ * @param {Function} callback - Funzione da eseguire
+ */
+function preservaScroll(callback) {
+  const scrollY = window.scrollY;
+  callback();
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: scrollY, behavior: "auto" });
+  });
+}
+
+
+// ======================================================
+// 4. GESTIONE ERRORI UI
+// ======================================================
+
+/**
+ * Mostra un errore numerico su un input
+ * @param {HTMLElement} input - Input da marcare come errato
+ */
+function mostraErroreNumero(input) {
+  input.classList.add("input-errore");
+  let msg = input.parentElement.querySelector(".messaggio-errore");
+  if (!msg) {
+    msg = document.createElement("div");
+    msg.className = "messaggio-errore";
+    msg.textContent = MESSAGGI_ERRORE.NUMERO_NON_VALIDO;
+    input.parentElement.appendChild(msg);
+  }
+  msg.style.display = "block";
+}
+
+/**
+ * Nasconde l'errore numerico su un input
+ * @param {HTMLElement} input - Input da cui rimuovere l'errore
+ */
+function nascondiErroreNumero(input) {
+  input.classList.remove("input-errore");
+  const msg = input.parentElement.querySelector(".messaggio-errore");
+  if (msg) msg.style.display = "none";
+}
+
+/**
+ * Mostra un errore su un selettore di unità
+ * @param {HTMLElement} select - Select da marcare come errato
+ */
+function mostraErroreUnita(select) {
+  select.classList.add("select-errore");
+  const campo = select.closest(".campo-unita");
+  let msg = campo.querySelector(".errore-unita");
+  if (!msg) {
+    msg = document.createElement("div");
+    msg.className = "errore-unita";
+    msg.textContent = MESSAGGI_ERRORE.UNITA_INCONGRUENTI;
+    campo.appendChild(msg);
+  }
+  msg.style.display = "block";
+}
+
+/**
+ * Rimuove l'errore unità da una riga
+ * @param {HTMLElement} riga - Riga ingrediente
+ */
+function rimuoviErroreUnita(riga) {
+  const selectHai = riga.querySelector(".unita-hai");
+  selectHai.classList.remove("select-errore");
+  const msg = riga.querySelector(".errore-unita");
+  if (msg) msg.style.display = "none";
+}
+
+/**
+ * Mostra un errore sul nome ingrediente
+ * @param {HTMLElement} input - Input del nome
+ */
+function mostraErroreNomeIngrediente(input) {
+  input.classList.add("input-errore");
+  let errore = input.parentElement.querySelector(".errore-nome");
+  if (!errore) {
+    errore = document.createElement("div");
+    errore.className = "errore errore-nome";
+    errore.textContent = MESSAGGI_ERRORE.INGREDIENTE_NON_VALIDO;
+    input.parentElement.appendChild(errore);
+  }
+}
+
+/**
+ * Reset di tutti gli errori di una riga
+ * @param {HTMLElement} riga - Riga ingrediente
+ */
+function resetErroriRiga(riga) {
+  const nomeInput = riga.querySelector(".nome");
+  if (nomeInput) {
+    nomeInput.classList.remove("input-errore");
+    const errNome = nomeInput.parentElement.querySelector(".errore-nome");
+    if (errNome) errNome.remove();
+    const errMsg = nomeInput.parentElement.querySelector(".messaggio-errore");
+    if (errMsg) errMsg.remove();
+  }
+
+  const originaleInput = riga.querySelector(".originale");
+  if (originaleInput) {
+    originaleInput.classList.remove("input-errore");
+    const errMsg = originaleInput.parentElement.querySelector(".messaggio-errore");
+    if (errMsg) errMsg.remove();
+  }
+
+  rimuoviErroreUnita(riga);
+}
+
+/**
+ * Rimuove l'errore quando l'utente inizia a digitare
+ * @param {HTMLElement} input - Input da monitorare
+ */
+function rimuoviErroreOnInput(input) {
+  if (!input) return;
+  input.addEventListener("input", () => {
+    nascondiErroreNumero(input);
+  });
+}
+
+
+// ======================================================
+// 5. NOTIFICHE BANNER
+// ======================================================
+
+let bannerTimeout = null;
+
+/**
+ * Mostra una notifica banner
+ * @param {string} messaggio - Testo da mostrare
+ * @param {number} durata - Durata in millisecondi
+ */
+function mostraBanner(messaggio, durata = TIMING.DURATA_BANNER) {
+  const banner = document.getElementById("banner-notifica");
+  const testo = document.getElementById("banner-testo");
+  const btnChiudi = banner.querySelector(".chiudi-banner");
+
+  testo.textContent = messaggio;
+  banner.classList.remove("nascosto", "fade-out");
+
+  if (bannerTimeout) clearTimeout(bannerTimeout);
+  bannerTimeout = setTimeout(nascondi, durata);
+
+  function nascondi() {
+    banner.classList.add("fade-out");
+    setTimeout(() => {
+      banner.classList.add("nascosto");
+      banner.classList.remove("sad");
+    }, TIMING.ANIMAZIONE_FADE);
+  }
+
+  btnChiudi.onclick = () => {
+    if (bannerTimeout) clearTimeout(bannerTimeout);
+    nascondi();
+  };
+}
+
+
+// ======================================================
+// 6. GESTIONE STATO QB (Quanto Basta)
+// ======================================================
+
+/**
+ * Aggiorna lo stato degli input quando l'unità è "q.b."
+ * @param {HTMLElement} riga - Riga ingrediente
+ */
 function aggiornaStatoInputQB(riga) {
   const selectQuantita = riga.querySelector(".unita");
   const inputQuantita = riga.querySelector(".originale");
-
   const selectHai = riga.querySelector(".unita-hai");
   const inputHai = riga.querySelector(".disponibile");
 
   if (selectQuantita.value === "qb") {
-    // Quantità
     inputQuantita.value = "";
     inputQuantita.placeholder = "q.b.";
     inputQuantita.disabled = true;
-    nascondiErrore(inputQuantita);
+    nascondiErroreNumero(inputQuantita);
 
-    // Tu hai
     selectHai.value = "qb";
     selectHai.disabled = true;
     inputHai.value = "";
     inputHai.placeholder = "q.b.";
     inputHai.disabled = true;
-    nascondiErrore(inputHai);
-    
-  } else { //ripristino normale
-    // Quantità
+    nascondiErroreNumero(inputHai);
+  } else {
     inputQuantita.disabled = false;
     inputQuantita.placeholder = "Quantità";
-
-    // Tu hai
     inputHai.disabled = false;
     inputHai.placeholder = "Tu hai";
     selectHai.disabled = false;
   }
 }
 
-function aggiornaStatoQBCompleto(riga) {
-  const unitaOrig = riga.querySelector(".unita").value;
-  const unitaHai = riga.querySelector(".unita-hai");
-  const inputOrig = riga.querySelector(".originale");
-  const inputHai = riga.querySelector(".disponibile");
+/**
+ * Aggiorna lo stato QB nel popup
+ * @param {HTMLElement} riga - Riga popup
+ */
+function aggiornaStatoQBPopup(riga) {
+  const select = riga.querySelector(".popup-unita");
+  const input = riga.querySelector(".popup-quantita");
 
-  if (unitaOrig === "qb") {
-    // quantità
-    inputOrig.value = "";
-    inputOrig.placeholder = "q.b.";
-    inputOrig.disabled = true;
-
-    // tu hai
-    unitaHai.value = "qb";
-    inputHai.value = "";
-    inputHai.placeholder = "q.b.";
-    inputHai.disabled = true;
-
-    nascondiErrore(inputOrig);
-    nascondiErrore(inputHai);
+  if (select.value === "qb") {
+    input.value = "";
+    input.placeholder = "q.b.";
+    input.disabled = true;
+    input.classList.remove("input-errore");
   } else {
-    inputOrig.disabled = false;
-    inputOrig.placeholder = "Quantità";
-
-    inputHai.disabled = false;
-    inputHai.placeholder = "Tu hai";
+    input.disabled = false;
+    input.placeholder = "Quantità";
   }
 }
 
 
-function mostraErrore(input) {
-  input.classList.add("input-errore");
-  
-  // Crea il messaggio se non esiste
-  let msg = input.parentElement.querySelector(".messaggio-errore");
-  if (!msg) {
-    msg = document.createElement("div");
-    msg.className = "messaggio-errore";
-    msg.textContent = "Inserire numero valido!";
-    input.parentElement.appendChild(msg);
-  }
-  msg.style.display = "block";
-}
+// ======================================================
+// 7. COMPONENTI - Righe Ingredienti
+// ======================================================
 
-function nascondiErrore(input) {
-  input.classList.remove("input-errore");
-  const msg = input.parentElement.querySelector(".messaggio-errore");
-  if (msg) msg.style.display = "none";
-}
+/**
+ * Aggiunge una nuova riga ingrediente al calcolatore
+ * @param {string} nome - Nome ingrediente
+ * @param {string} originale - Quantità originale
+ * @param {string} unita - Unità di misura
+ * @param {string} hai - Quantità disponibile
+ * @param {string} unitaHai - Unità quantità disponibile
+ */
+function aggiungiRiga(nome = "", originale = "", unita = "g", hai = "", unitaHai = "g") {
+  const contenitore = document.getElementById("ingredienti");
+  const riga = document.createElement("div");
+  riga.className = "riga";
 
-function mostraErroreUnita(select) {
-  select.classList.add("select-errore");
+  riga.innerHTML = `
+    <button class="remove" onclick="this.parentElement.remove()">−</button>
+    <input class="nome" placeholder="Ingrediente" value="${nome}">
+    <div class="campo-unita quantita">
+      <input class="originale" type="text" inputmode="decimal" pattern="[0-9.,]*" 
+             placeholder="Quantità" value="${originale != null ? originale : ""}">
+      <select class="unita">
+        <option value="g">g</option>
+        <option value="kg">kg</option>
+        <option value="ml">ml</option>
+        <option value="l">l</option>
+        <option value="pz">pz.</option>
+        <option value="qb">q.b.</option>
+      </select>
+    </div>
+    <div class="campo-unita tu-hai">
+      <input class="disponibile" type="text" inputmode="decimal" pattern="[0-9.,]*" 
+             placeholder="Tu hai" value="${hai != null ? hai : ""}">
+      <select class="unita-hai">
+        <option value="g">g</option>
+        <option value="kg">kg</option>
+        <option value="ml">ml</option>
+        <option value="l">l</option>
+        <option value="pz">pz.</option>
+        <option value="qb">q.b.</option>
+      </select>
+    </div>
+  `;
 
-  const campo = select.closest(".campo-unita");
+  contenitore.appendChild(riga);
 
-  let msg = campo.querySelector(".errore-unita");
-  if (!msg) {
-    msg = document.createElement("div");
-    msg.className = "errore-unita";
-    msg.textContent = "Unità incongruenti!";
-    campo.appendChild(msg);
-  }
-
-  msg.style.display = "block";
-}
-
-function rimuoviErroreUnita(riga) {
-  const selectHai = riga.querySelector(".unita-hai");
-  selectHai.classList.remove("select-errore");
-
-  const msg = riga.querySelector(".errore-unita");
-  if (msg) {
-    msg.style.display = "none";
-  }
-}
-
-function rimuoviErroreOnInput(input) {
-  if (!input) return;
-
-  input.addEventListener("input", () => {
-    nascondiErrore(input);
-  });
-}
-
-function mostraErroreNomeIngrediente(input) {
-  input.classList.add("input-errore");
-
-  let errore = input.parentElement.querySelector(".errore-nome");
-  if (!errore) {
-    errore = document.createElement("div");
-    errore.className = "errore errore-nome";
-    errore.textContent = "Inserire ingrediente valido!";
-    input.parentElement.appendChild(errore);
-  }
-}
-
-function resetErroriRiga(riga) {
-  // input nome
+  // Reset errore nome ingrediente on input
   const nomeInput = riga.querySelector(".nome");
-  if (nomeInput) {
+  nomeInput.addEventListener("input", () => {
     nomeInput.classList.remove("input-errore");
+    const errore = nomeInput.parentElement.querySelector(".errore-nome");
+    if (errore) errore.remove();
+  });
 
-    const errNome = nomeInput.parentElement.querySelector(".errore-nome");
-    if (errNome) errNome.remove();
+  // Imposta unità salvate
+  const selectOrig = riga.querySelector(".unita");
+  const selectHai = riga.querySelector(".unita-hai");
+  selectOrig.value = unita;
+  selectHai.value = unitaHai || unita;
 
-    const errMsg = nomeInput.parentElement.querySelector(".messaggio-errore");
-    if (errMsg) errMsg.remove();
-  }
+  selectOrig.addEventListener("change", () => {
+    rimuoviErroreUnita(riga);
+    aggiornaStatoInputQB(riga);
+  });
 
-  // input quantità
-  const originaleInput = riga.querySelector(".originale");
-  if (originaleInput) {
-    originaleInput.classList.remove("input-errore");
+  selectHai.addEventListener("change", () => {
+    rimuoviErroreUnita(riga);
+  });
 
-    const errMsg = originaleInput.parentElement.querySelector(".messaggio-errore");
-    if (errMsg) errMsg.remove();
-  }
+  aggiornaStatoInputQB(riga);
+}
 
-  // errore unità
-  rimuoviErroreUnita(riga);
+/**
+ * Crea una riga ingrediente per il popup
+ * @param {Object} ing - Oggetto ingrediente {nome, originale, unita}
+ * @returns {HTMLElement} - Elemento riga creato
+ */
+function creaRigaIngredientePopup(ing = {}) {
+  const riga = document.createElement("div");
+  riga.className = "popup-riga";
+
+  riga.innerHTML = `
+    <button class="remove">−</button>
+    <div class="popup-col popup-col-nome">
+      <input class="popup-nome" placeholder="Ingrediente" value="${ing.nome ?? ""}">
+      <div class="popup-errore popup-errore-nome"></div>
+    </div>
+    <div class="popup-col popup-col-qta">
+      <div class="popup-campo-unita">
+        <input type="text" class="popup-quantita" inputmode="decimal" pattern="[0-9.,]*" 
+               placeholder="Quantità" value="${ing.originale ?? ""}">
+        <select class="popup-unita">
+          <option value="g">g</option>
+          <option value="kg">kg</option>
+          <option value="ml">ml</option>
+          <option value="l">l</option>
+          <option value="pz">pz.</option>
+          <option value="qb">q.b.</option>
+        </select>
+      </div>
+      <div class="popup-errore popup-errore-qta"></div>
+    </div>
+  `;
+
+  riga.querySelector(".remove").onclick = () => riga.remove();
+
+  const select = riga.querySelector(".popup-unita");
+  if (ing.unita) select.value = ing.unita;
+
+  select.addEventListener("change", () => aggiornaStatoQBPopup(riga));
+  aggiornaStatoQBPopup(riga);
+
+  // Rimozione errori on input
+  const nomeInput = riga.querySelector(".popup-nome");
+  const qtaInput = riga.querySelector(".popup-quantita");
+  const erroreNomeEl = riga.querySelector(".popup-errore-nome");
+  const erroreQtaEl = riga.querySelector(".popup-errore-qta");
+
+  nomeInput.addEventListener("input", () => {
+    nomeInput.classList.remove("input-errore");
+    erroreNomeEl.textContent = "";
+  });
+
+  qtaInput.addEventListener("input", () => {
+    qtaInput.classList.remove("input-errore");
+    erroreQtaEl.textContent = "";
+  });
+
+  return riga;
 }
 
 
+// ======================================================
+// 8. BUSINESS LOGIC - Calcoli
+// ======================================================
+
+/**
+ * Legge i valori delle porzioni dal calcolatore
+ * @returns {Object} - {sarebbe: {valore, tipo}, vorrei: {valore, tipo}}
+ */
+function leggiPorzioniCalcolatore() {
+  return {
+    sarebbe: {
+      valore: Number(document.querySelector(".input-sarebbe-num").value) || LIMITI_PORZIONI.MIN,
+      tipo: document.querySelector(".select-sarebbe-tipo").value
+    },
+    vorrei: {
+      valore: document.querySelector(".input-vorrei-num").value === "" 
+        ? null 
+        : Number(document.querySelector(".input-vorrei-num").value),
+      tipo: document.querySelector(".select-vorrei-tipo").value
+    }
+  };
+}
+
+// Calcola le nuove proporzioni degli ingredienti
 function calcola() {
   const righe = document.querySelectorAll(".riga");
   const inputVorrei = document.querySelector(".input-vorrei-num");
@@ -362,7 +599,6 @@ function calcola() {
     ? Number(inputVorrei.value)
     : null;
 
-  // reset stato visivo
   if (inputVorrei) {
     inputVorrei.classList.remove("auto-changed");
   }
@@ -370,47 +606,38 @@ function calcola() {
   let rapporti = [];
   let erroreTrovato = false;
 
-  /* =============================
-     PRIMA PASSATA: VALIDAZIONE
-     + CALCOLO RAPPORTI
-     ============================= */
+  // PRIMA PASSATA: Validazione + Calcolo rapporti
   righe.forEach(riga => {
     const originaleInput = riga.querySelector(".originale");
     const disponibileInput = riga.querySelector(".disponibile");
-
     const unitaOrig = riga.querySelector(".unita").value;
     const unitaHai = riga.querySelector(".unita-hai").value;
-    
+
     rimuoviErroreOnInput(originaleInput);
     rimuoviErroreOnInput(disponibileInput);
 
-    // se è q.b. → ignora completamente la riga
     if (unitaOrig === "qb") return;
 
     const originale = leggiNumero(originaleInput.value);
     const disponibile = leggiNumero(disponibileInput.value);
 
-    nascondiErrore(originaleInput);
-    nascondiErrore(disponibileInput);
+    nascondiErroreNumero(originaleInput);
+    nascondiErroreNumero(disponibileInput);
 
-    // originale NON valido
     if (isNaN(originale)) {
-      mostraErrore(originaleInput);
+      mostraErroreNumero(originaleInput);
       erroreTrovato = true;
       return;
     }
 
-    // disponibile compilato ma NON valido
     if (disponibileInput.value !== "" && isNaN(disponibile)) {
-      mostraErrore(disponibileInput);
+      mostraErroreNumero(disponibileInput);
       erroreTrovato = true;
       return;
     }
 
-    // se "tu hai" è vuoto → non partecipa
     if (isNaN(disponibile)) return;
 
-    // unità incompatibili
     if (UNITA[unitaOrig].tipo !== UNITA[unitaHai].tipo) {
       mostraErroreUnita(riga.querySelector(".unita-hai"));
       erroreTrovato = true;
@@ -423,48 +650,35 @@ function calcola() {
     rapporti.push(baseDisp / baseOrig);
   });
 
-  if (erroreTrovato) return; //!!!!
+  if (erroreTrovato) return;
 
-  /* =============================
-   FATTORE PORZIONI
-   ============================= */
+  // Fattore porzioni
   const porzioni = leggiPorzioniCalcolatore();
-
   let fattorePorzioni = null;
 
-  if (
-    porzioni.sarebbe.valore !== null &&
-    porzioni.vorrei.valore !== null
-  ) {
+  if (porzioni.sarebbe.valore !== null && porzioni.vorrei.valore !== null) {
     fattorePorzioni = porzioni.vorrei.valore / porzioni.sarebbe.valore;
   }
 
-  /* =============================
-   SCELTA FATTORE LIMITANTE
-   ============================= */
+  // Scelta fattore limitante
   let fattori = [];
-
   if (rapporti.length > 0) {
     fattori.push(Math.min(...rapporti));
   }
-
   if (fattorePorzioni !== null) {
     fattori.push(fattorePorzioni);
   }
 
   if (fattori.length === 0) {
-    alert("Nessuna quantità da ricalcolare!");
+    alert(MESSAGGI_ERRORE.NESSUNA_QUANTITA);
     return;
   }
 
   const fattore = Math.min(...fattori);
 
-  /* =============================
-     SECONDA PASSATA: SCRITTURA
-     RISULTATI
-     ============================= */
+  // SECONDA PASSATA: Scrittura risultati
   let almenoUnoZero = false;
-  
+
   righe.forEach(riga => {
     const unitaOrig = riga.querySelector(".unita").value;
     if (unitaOrig === "qb") return;
@@ -481,102 +695,92 @@ function calcola() {
 
     const tipo = UNITA[unitaOrig].tipo;
     const normalizzato = normalizzaUnita(risultatoBase, tipo);
-
-    const valoreFormattato = formattaValore(
-      normalizzato.valore,
-      normalizzato.unita
-    );
+    const valoreFormattato = formattaValore(normalizzato.valore, normalizzato.unita);
 
     disponibileInput.value = valoreFormattato;
-
     if (normalizzato.unita) {
       selectHai.value = normalizzato.unita;
     }
-    
+
     if (valoreFormattato <= 0) {
       almenoUnoZero = true;
     }
-
   });
-  
-  /* =============================
-   AGGIORNA PORZIONI "VORREI"
-   ============================= */
+
+  // Aggiorna porzioni "vorrei"
   if (porzioni.sarebbe.valore !== null && inputVorrei) {
     const risultatoPorzioni = porzioni.sarebbe.valore * fattore;
     const valoreCalcolato = Number(risultatoPorzioni.toFixed(1));
 
-    // scrive sempre il valore calcolato
     inputVorrei.value = valoreCalcolato;
-    
+
     if (valoreCalcolato <= 0) {
       almenoUnoZero = true;
     }
 
-    // evidenzia SOLO se il valore precedente esisteva ed è cambiato
-    if (
-      valoreVorreiPrima !== null &&
-      valoreVorreiPrima !== valoreCalcolato
-    ) {
+    if (valoreVorreiPrima !== null && valoreVorreiPrima !== valoreCalcolato) {
       inputVorrei.classList.add("auto-changed");
-      
-      // pulse SOLO se non era già stato modificato automaticamente
+
       if (!inputVorrei.dataset.pulsed) {
         inputVorrei.classList.add("pulse");
         inputVorrei.dataset.pulsed = "true";
 
-        // rimuove la classe pulse dopo l'animazione
         setTimeout(() => {
           inputVorrei.classList.remove("pulse");
-        }, 600);
+        }, TIMING.ANIMAZIONE_PULSE);
       }
     }
   }
-  
+
   if (almenoUnoZero) {
     const bannerNotifica = document.querySelector(".banner-notifica");
     bannerNotifica.classList.add("sad");
-    mostraBanner("Non hai abbastanza ingredienti per fare questa ricetta :(");
+    mostraBanner(MESSAGGI_ERRORE.INGREDIENTI_INSUFFICIENTI);
   }
 }
 
+// Reset delle quantità disponibili
+function resetQuantita() {
+  const conferma = confirm(MESSAGGI_CONFERMA.RESET_QUANTITA);
+  if (!conferma) return;
 
-let bannerTimeout = null;
-
-function mostraBanner(messaggio, durata = 3000) {
-  const banner = document.getElementById("banner-notifica");
-  const testo = document.getElementById("banner-testo");
-  const btnChiudi = banner.querySelector(".chiudi-banner");
-
-  testo.textContent = messaggio;
-  banner.classList.remove("nascosto", "fade-out");
-
-  // ⛔ annulla eventuale timeout precedente
-  if (bannerTimeout) {
-    clearTimeout(bannerTimeout);
+  const inputVorrei = document.querySelector(".input-vorrei-num");
+  if (inputVorrei) inputVorrei.value = "";
+  if (inputVorrei) {
+    inputVorrei.classList.remove("auto-changed");
+    inputVorrei.classList.remove("pulse");
+    delete inputVorrei.dataset.pulsed;
   }
 
-  bannerTimeout = setTimeout(nascondi, durata);
+  document.querySelectorAll(".campo-unita.tu-hai").forEach(campo => {
+    const input = campo.querySelector("input");
+    const select = campo.querySelector("select");
+    if (input) input.value = "";
+    if (select && select.value !== "qb") {
+      select.selectedIndex = 0;
+    }
+  });
 
-  function nascondi() {
-    banner.classList.add("fade-out");
-    setTimeout(() => {
-      banner.classList.add("nascosto");
-      banner.classList.remove("sad");
-    }, 600);
-  }
-
-  btnChiudi.onclick = () => {
-    if (bannerTimeout) clearTimeout(bannerTimeout);
-    nascondi();
-  };
+  document.querySelectorAll(".riga").forEach(riga => {
+    rimuoviErroreUnita(riga);
+    riga.querySelectorAll("input").forEach(input => {
+      nascondiErroreNumero(input);
+    });
+  });
 }
 
 
+// ======================================================
+// 9. BUSINESS LOGIC - Salvataggio
+// ======================================================
+
+/**
+ * Legge i dati della ricetta dall'interfaccia del calcolatore
+ * @returns {Array|null} - Array di ingredienti o null se ci sono errori
+ */
 function leggiRicettaDaUI() {
   const righe = document.querySelectorAll(".riga");
   const ingredienti = [];
-
   let erroreIngrediente = false;
 
   righe.forEach(riga => {
@@ -587,95 +791,76 @@ function leggiRicettaDaUI() {
     const nome = nomeInput.value.trim();
     const valoreRaw = originaleInput.value.trim();
 
-    // reset errore visivo
     nomeInput.classList.remove("input-errore");
     originaleInput.classList.remove("input-errore");
 
-    // ✅ CASO 1: entrambi vuoti → ignora la riga
+    // Riga completamente vuota
     if (!nome && !valoreRaw) {
       resetErroriRiga(riga);
-      return; // salta questa riga
+      return;
     }
 
-    // ❌ CASO 2: quantità piena MA nome vuoto
+    // Quantità piena MA nome vuoto
     if (!nome && valoreRaw) {
       mostraErroreNomeIngrediente(nomeInput);
       erroreIngrediente = true;
       return;
     }
 
-    // ❌ CASO 3: nome pieno MA quantità vuota (e NON è q.b.)
+    // Nome pieno MA quantità vuota (e NON è q.b.)
     if (nome && !valoreRaw && unita !== "qb") {
-      mostraErrore(originaleInput);
+      mostraErroreNumero(originaleInput);
       erroreIngrediente = true;
       return;
     }
 
-    // caso q.b.
+    // Caso q.b.
     if (unita === "qb") {
-      ingredienti.push({
-        nome,
-        originale: null,
-        unita: "qb"
-      });
+      ingredienti.push({ nome, originale: null, unita: "qb" });
       return;
     }
 
     const valore = leggiNumero(valoreRaw);
-    if (isNaN(valore)) { //
-      mostraErrore(originaleInput);
+    if (isNaN(valore)) {
+      mostraErroreNumero(originaleInput);
       erroreIngrediente = true;
       return;
     }
 
-    ingredienti.push({
-      nome,
-      originale: valore,
-      unita
-    });
+    ingredienti.push({ nome, originale: valore, unita });
   });
 
-  // ❌ se c'è almeno un errore → BLOCCA il salvataggio
-  if (erroreIngrediente) {
-    return null;
-  }
-
+  if (erroreIngrediente) return null;
   return ingredienti;
 }
 
+// Salva la ricetta corrente
 function salvaRicetta() {
   const inputNome = document.getElementById("nomeRicetta");
   const nome = inputNome.value.trim();
 
-  // reset errore visivo
   inputNome.classList.remove("error");
   const errorEl = document.getElementById("nome-ricetta-error");
   if (errorEl) errorEl.textContent = "";
 
   if (!nome) {
     inputNome.classList.add("error");
-    errorEl.textContent = "Inserire nome ricetta.";
+    errorEl.textContent = MESSAGGI_ERRORE.NOME_RICETTA_VUOTO;
     return;
   }
 
-  // ❗ controllo duplicato
   if (nomeGiaEsistente(nome)) {
     inputNome.classList.add("error");
-    errorEl.textContent = "Nome ricetta già esistente.";
+    errorEl.textContent = MESSAGGI_ERRORE.NOME_RICETTA_DUPLICATO;
     return;
   }
-  
+
   const porzioniCalc = leggiPorzioniCalcolatore();
-
-  const porzioni = porzioniCalc.sarebbe.valore;
-  const tipoPorzioni = porzioniCalc.sarebbe.tipo;
-
-
   const ingredienti = leggiRicettaDaUI();
   if (!ingredienti) return;
-  
+
   if (ingredienti.length === 0) {
-    alert("Nessun ingrediente valido");
+    alert(MESSAGGI_ERRORE.NESSUN_INGREDIENTE);
     return;
   }
 
@@ -684,316 +869,245 @@ function salvaRicetta() {
     nome,
     ingredienti,
     preferita: false,
-    porzioni,
-    tipoPorzioni
+    porzioni: porzioniCalc.sarebbe.valore,
+    tipoPorzioni: porzioniCalc.sarebbe.tipo
   };
 
-  const salvate = JSON.parse(localStorage.getItem("ricette")) || [];
+  const salvate = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
   salvate.push(ricetta);
-
-  localStorage.setItem("ricette", JSON.stringify(salvate));
+  localStorage.setItem(STORAGE_KEYS.RICETTE, JSON.stringify(salvate));
 
   mostraRicetteSalvate();
-  mostraBanner("Ricetta salvata ✔️");
+  mostraBanner(MESSAGGI_SUCCESSO.RICETTA_SALVATA);
 }
 
-
-function resetQuantita() {
-  const conferma = confirm(
-    "Svuotare le caselle con le quantità possedute?"
+/**
+ * Verifica se un nome ricetta esiste già
+ * @param {string} nome - Nome da verificare
+ * @param {number} currentId - ID ricetta corrente (per escluderla dal controllo)
+ * @returns {boolean} - True se esiste
+ */
+function nomeGiaEsistente(nome, currentId) {
+  const ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
+  return ricette.some(
+    r => r.nome.toLowerCase() === nome.toLowerCase() && r.id !== currentId
   );
-  if (!conferma) return;
+}
 
-  // vorrei
-  const inputVorrei = document.querySelector(".input-vorrei-num");
-  if (inputVorrei) inputVorrei.value = "";
-  if (inputVorrei) {
-    inputVorrei.classList.remove("auto-changed");
-    inputVorrei.classList.remove("pulse");
-    delete inputVorrei.dataset.pulsed;
-  }
-
-  // tu hai
-  document.querySelectorAll(".campo-unita.tu-hai").forEach(campo => {
-    const input = campo.querySelector("input");
-    const select = campo.querySelector("select");
-
-    if (input) input.value = "";
-    if (select && select.value !== "qb") {
-      select.selectedIndex = 0;
-    }
-  });
-
-  // rimuove TUTTI gli errori (input + unità)
-  document.querySelectorAll(".riga").forEach(riga => {
-    // errore unità
-    rimuoviErroreUnita(riga);
-
-    // errori numerici: originale + tu hai
-    riga.querySelectorAll("input").forEach(input => {
-      nascondiErrore(input);
-    });
-  });
+/**
+ * Salva il nome modificato di una ricetta
+ * @param {number} id - ID ricetta
+ * @param {string} nuovoNome - Nuovo nome
+ */
+function salvaNome(id, nuovoNome) {
+  const ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
+  const ricetta = ricette.find(r => r.id === id);
+  if (!ricetta) return;
+  ricetta.nome = nuovoNome;
+  localStorage.setItem(STORAGE_KEYS.RICETTE, JSON.stringify(ricette));
 }
 
 
-function leggiPorzioniCalcolatore() {
-  return {
-    sarebbe: {
-      valore: Number(document.querySelector(".input-sarebbe-num").value) || 1,
-      tipo: document.querySelector(".select-sarebbe-tipo").value
-    },
-    vorrei: {
-      valore: document.querySelector(".input-vorrei-num").value === "" ? null : Number(document.querySelector(".input-vorrei-num").value),
-      tipo: document.querySelector(".select-vorrei-tipo").value
-    }
-  };
+// ======================================================
+// 10. STORAGE - LocalStorage
+// ======================================================
+
+/**
+ * Elimina una ricetta
+ * @param {number} id - ID ricetta da eliminare
+ */
+function eliminaRicetta(id) {
+  let ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
+  ricette = ricette.filter(r => r.id !== id);
+  localStorage.setItem(STORAGE_KEYS.RICETTE, JSON.stringify(ricette));
+  mostraRicetteSalvate();
 }
 
-function limitaInputPorzioni() {
-  const inputs = document.querySelectorAll('.input-sarebbe-num, .input-vorrei-num');
-  
-  inputs.forEach(input => {
-    input.addEventListener('input', function() {
-      let val = parseInt(this.value);
-      if (val > 99) this.value = 99;
-      if (val < 1) this.value = 1;
-    });
-  });
-  
-  document.addEventListener("keydown", e => {
-    const input = e.target;
+/**
+ * Toggle stato preferito di una ricetta
+ * @param {number} id - ID ricetta
+ */
+function togglePreferito(id) {
+  const ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
+  const ricetta = ricette.find(r => r.id === id);
+  if (!ricetta) return;
+  ricetta.preferita = !ricetta.preferita;
+  localStorage.setItem(STORAGE_KEYS.RICETTE, JSON.stringify(ricette));
+  mostraRicetteSalvate();
+}
 
-    if (!input.classList.contains("input-porzioni-calc")) return;
+// Salva l'ordine delle ricette dal DOM
+function salvaOrdineDaDOM() {
+  const wrappers = document.querySelectorAll(".ricetta-swipe");
+  const ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
+  const nuovaLista = [];
 
-    // blocca sempre + e -
-    if (e.key === "+" || e.key === "-") {
-      e.preventDefault();
-      return;
-    }
-
-    // blocca il punto SOLO nella colonna "Sarebbe"
-    if (
-      input.classList.contains("input-sarebbe-num") &&
-      (e.key === "." || e.key === ",")
-    ) {
-      e.preventDefault();
-    }
+  wrappers.forEach(w => {
+    const id = Number(w.dataset.id);
+    const ricetta = ricette.find(r => r.id === id);
+    if (ricetta) nuovaLista.push(ricetta);
   });
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const selectSarebbe = document.querySelector(".select-sarebbe-tipo");
-    const selectVorrei  = document.querySelector(".select-vorrei-tipo");
-
-    if (!selectSarebbe || !selectVorrei) return;
-
-    // inizializza: il destro segue il sinistro
-    selectVorrei.value = selectSarebbe.value;
-    selectVorrei.disabled = true;
-
-    // ogni cambio a sinistra si riflette a destra
-    selectSarebbe.addEventListener("change", () => {
-      selectVorrei.value = selectSarebbe.value;
-    });
-  });
-  
-  const inputSarebbe = document.querySelector('.input-sarebbe-num');
-  if (inputSarebbe) {
-    inputSarebbe.addEventListener('blur', function() {
-      if (this.value === '' || parseInt(this.value) < 1 || isNaN(parseInt(this.value))) {
-        this.value = 1;
-      }
-    });
-  }
-  
-  document.addEventListener("input", e => {
-    const input = e.target;
-
-    if (!input.classList.contains("input-vorrei-num")) return;
-
-    // se l'utente modifica manualmente → reset evidenziazione
-    input.classList.remove("auto-changed");
-    input.classList.remove("pulse");
-    delete input.dataset.pulsed;
-  });
+  localStorage.setItem(STORAGE_KEYS.RICETTE, JSON.stringify(nuovaLista));
 }
 
 
-function caricaRicetta() {
-  const index = document.getElementById("listaRicette").value;
-  if (index === "") return;
+// ======================================================
+// 11. RENDERING - Lista Ricette
+// ======================================================
 
-  const ricette = JSON.parse(localStorage.getItem("ricette"));
-  const ricetta = ricette[index];
-
-  // pulisci griglia
-  document.querySelectorAll(".riga").forEach(r => r.remove());
-
-  ricetta.ingredienti.forEach(ing => {
-    aggiungiRiga(ing.nome, ing.originale, ing.unita, "");
-  });
-} //obsoleta ma crea problemi con la funzione apriMenu() se viene eliminata
-
-
-function mostraRicetteSalvate() {
-  const contenitore = document.getElementById("lista-ricette-pagina");
-  if (!contenitore) return;
-
-  const scrollY = window.scrollY;
-  contenitore.innerHTML = "";
-
-  let ricette = JSON.parse(localStorage.getItem("ricette")) || [];
-  
-  const filtro = leggiFiltroRicette();
-
-  if (filtro) {
-    ricette = ricette.filter(r =>
-      r.nome.toLowerCase().includes(filtro)
-    );
-  }
-
-  ricette = ricette.map(r => ({
-    id: r.id,
-    nome: r.nome,
-    ingredienti: r.ingredienti ?? [],
-    preferita: r.preferita ?? false,
-    link: r.link ?? "",
-    note: r.note ?? "",
-    porzioni: r.porzioni ?? 1,
-    tipoPorzioni: r.tipoPorzioni ?? "porzioni"
-  }));
-
-  // ⭐ preferiti in cima
-  ricette.sort((a, b) => (b.preferita === true) - (a.preferita === true));
-
-  ricette.forEach(r => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "ricetta-swipe";
-    wrapper.dataset.id = r.id;
-    wrapper.dataset.preferita = r.preferita ? "1" : "0";
-
-    const deleteBg = document.createElement("div");
-    deleteBg.className = "ricetta-delete";
-    deleteBg.textContent = "🗑";
-
-    const card = document.createElement("div");
-    card.className = "ricetta-card";
-
-    card.innerHTML = `
-      <div class="card-main">
-        <div class="card-header">
-          <span class="drag-handle">⠿</span>
-
-          <div class="card-title-wrapper">
-            <div class="card-title">
-              <span class="ricetta-nome">${r.nome}</span>
-              <span class="edit-nome" title="Modifica nome">✏️</span>
-            </div>
-            <div class="nome-error"></div>
-          </div>
-
-          <span class="ricetta-star ${r.preferita ? "attiva" : ""}">★</span>
-          
-          <span class="ricetta-porzioni">
-          x${r.porzioni ?? 1} ${r.tipoPorzioni ?? "porzioni"}
-          </span>
-          
-        </div>
-
-        <div class="card-link">
-          ${r.link ? `<a href="${r.link}" target="_blank">${r.link}</a>` : ""}
-        </div>
-      </div>
-
-      <button class="btn-carica">Carica</button>
-    `;
-
-    // ⚠️ STRUTTURA OBBLIGATORIA PER SWIPE
-    wrapper.append(deleteBg, card);
-    contenitore.appendChild(wrapper);
-
-    // link cliccabile senza popup
-    const link = card.querySelector(".card-link a");
-    if (link) {
-      link.addEventListener("click", e => e.stopPropagation());
-    }
-
-    // ✏️ modifica nome
-    abilitaModificaNome(card, r.id);
-
-    // ⭐ preferito
-    card.querySelector(".ricetta-star").addEventListener("click", e => {
-      e.stopPropagation();
-      togglePreferito(r.id);
-    });
-
-    // 📂 carica nel calcolatore
-    card.querySelector(".btn-carica").addEventListener("click", e => {
-      e.stopPropagation();
-      caricaRicettaDaPagina(r.id);
-    });
-
-    // 📘 apri popup con controllo editing migliorato
-    card.addEventListener("click", e => {
-      const nomeEl = card.querySelector(".ricetta-nome");
-      
-      // 1️⃣ click su elementi interattivi → NON aprire popup
-      if (e.target.closest(".ricetta-nome, .edit-nome, .ricetta-star, .btn-carica, .drag-handle")) {
-        return;
-      }
-
-      // 2️⃣ se è appena uscito da editing → NON aprire popup
-      if (card.classList.contains("editing-nome") || card.dataset.justExitedEdit === "true") {
-        return;
-      }
-
-      // 3️⃣ altrimenti apri popup
-      apriPopupRicetta(r.id);
-    });
-
-    // gesture
-    abilitaSwipe(wrapper, card);
-    abilitaDrag(wrapper);
-  });
-
-  //localStorage.setItem("ricette", JSON.stringify(ricette)); //dava problemi con la barra di ricerca
-
-  requestAnimationFrame(() => {
-    window.scrollTo({ top: scrollY, behavior: "auto" });
-  });
-}
-
+/**
+ * Legge il filtro di ricerca
+ * @returns {string} - Testo del filtro (lowercase)
+ */
 function leggiFiltroRicette() {
   const input = document.getElementById("ricette-search-input");
   return input ? input.value.trim().toLowerCase() : "";
 }
 
+/**
+ * Crea una singola card ricetta con tutti i suoi event listener
+ * @param {Object} ricetta - Dati ricetta
+ * @returns {HTMLElement} - Wrapper della card creato
+ */
+function creaCardRicetta(ricetta) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "ricetta-swipe";
+  wrapper.dataset.id = ricetta.id;
+  wrapper.dataset.preferita = ricetta.preferita ? "1" : "0";
 
+  const deleteBg = document.createElement("div");
+  deleteBg.className = "ricetta-delete";
+  deleteBg.textContent = "🗑";
+
+  const card = document.createElement("div");
+  card.className = "ricetta-card";
+
+  card.innerHTML = `
+    <div class="card-main">
+      <div class="card-header">
+        <span class="drag-handle">⠿</span>
+        <div class="card-title-wrapper">
+          <div class="card-title">
+            <span class="ricetta-nome">${ricetta.nome}</span>
+            <span class="edit-nome" title="Modifica nome">✏️</span>
+          </div>
+          <div class="nome-error"></div>
+        </div>
+        <span class="ricetta-star ${ricetta.preferita ? "attiva" : ""}">★</span>
+        <span class="ricetta-porzioni">x${ricetta.porzioni ?? LIMITI_PORZIONI.MIN} ${ricetta.tipoPorzioni ?? "porzioni"}</span>
+      </div>
+      <div class="card-link">
+        ${ricetta.link ? `<a href="${ricetta.link}" target="_blank">${ricetta.link}</a>` : ""}
+      </div>
+    </div>
+    <button class="btn-carica">Carica</button>
+  `;
+
+  wrapper.append(deleteBg, card);
+
+  // Link cliccabile senza popup
+  const link = card.querySelector(".card-link a");
+  if (link) {
+    link.addEventListener("click", e => e.stopPropagation());
+  }
+
+  abilitaModificaNome(card, ricetta.id);
+
+  card.querySelector(".ricetta-star").addEventListener("click", e => {
+    e.stopPropagation();
+    togglePreferito(ricetta.id);
+  });
+
+  card.querySelector(".btn-carica").addEventListener("click", e => {
+    e.stopPropagation();
+    caricaRicettaDaPagina(ricetta.id);
+  });
+
+  card.addEventListener("click", e => {
+    if (e.target.closest(".ricetta-nome, .edit-nome, .ricetta-star, .btn-carica, .drag-handle")) {
+      return;
+    }
+    if (card.classList.contains("editing-nome") || card.dataset.justExitedEdit === "true") {
+      return;
+    }
+    apriPopupRicetta(ricetta.id);
+  });
+
+  return wrapper;
+}
+
+// Mostra la lista delle ricette salvate
+function mostraRicetteSalvate() {
+  preservaScroll(() => {
+    const contenitore = document.getElementById("lista-ricette-pagina");
+    if (!contenitore) return;
+
+    contenitore.innerHTML = "";
+
+    let ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
+
+    const filtro = leggiFiltroRicette();
+    if (filtro) {
+      ricette = ricette.filter(r => r.nome.toLowerCase().includes(filtro));
+    }
+
+    ricette = ricette.map(r => ({
+      id: r.id,
+      nome: r.nome,
+      ingredienti: r.ingredienti ?? [],
+      preferita: r.preferita ?? false,
+      link: r.link ?? "",
+      note: r.note ?? "",
+      porzioni: r.porzioni ?? LIMITI_PORZIONI.MIN,
+      tipoPorzioni: r.tipoPorzioni ?? "porzioni"
+    }));
+
+    ricette.sort((a, b) => (b.preferita === true) - (a.preferita === true));
+
+    ricette.forEach(r => {
+      const wrapper = creaCardRicetta(r);
+      contenitore.appendChild(wrapper);
+      
+      // Abilita swipe e drag DOPO che il wrapper è nel DOM
+      const card = wrapper.querySelector(".ricetta-card");
+      abilitaSwipe(wrapper, card);
+      abilitaDrag(wrapper);
+    });
+  });
+}
+
+
+// ======================================================
+// 12. INTERAZIONI - Modifica Nome
+// ======================================================
+
+/**
+ * Abilita la modifica inline del nome ricetta
+ * @param {HTMLElement} card - Card ricetta
+ * @param {number} id - ID ricetta
+ */
 function abilitaModificaNome(card, id) {
   const nomeEl = card.querySelector(".ricetta-nome");
   const editBtn = card.querySelector(".edit-nome");
 
   let originalName = nomeEl.textContent;
-  let isEditing = false; // 🔑 flag per tracciare lo stato
+  let isEditing = false;
 
   const errorEl = document.createElement("div");
   errorEl.className = "nome-error";
 
-  // ✏️ AVVIO EDIT
   editBtn.addEventListener("click", e => {
     e.stopPropagation();
-
     isEditing = true;
     card.classList.add("editing-nome");
     card.dataset.justExitedEdit = "false";
-
     originalName = nomeEl.textContent;
     nomeEl.contentEditable = "true";
     nomeEl.classList.add("editing");
-
     nomeEl.scrollLeft = 0;
     nomeEl.focus();
-    
+
     if (typeof enableAutoScrollOnEdit === 'function') {
       enableAutoScrollOnEdit(nomeEl);
     }
@@ -1002,46 +1116,36 @@ function abilitaModificaNome(card, id) {
     }
   });
 
-  // ⌨️ gestione tasti
   nomeEl.addEventListener("keydown", e => {
     if (e.key === "Enter") {
       e.preventDefault();
       nomeEl.blur();
     }
-
     if (e.key === "Escape") {
       nomeEl.textContent = originalName;
-      cleanup(false); // no salvataggio
+      cleanup(false);
     }
   });
 
-  // 🔚 FINE EDIT
   nomeEl.addEventListener("blur", () => {
-    if (!isEditing) return; // già gestito
+    if (!isEditing) return;
 
     const nuovoNome = nomeEl.textContent.trim();
 
-    // ❌ vuoto
     if (!nuovoNome) {
       mostraErrore("Nome ricetta non valido.");
       nomeEl.textContent = originalName;
-      
-      // riapri editing dopo un attimo
       setTimeout(() => nomeEl.focus(), 10);
       return;
     }
 
-    // ❌ duplicato
     if (nomeGiaEsistente(nuovoNome, id)) {
       mostraErrore("Nome ricetta già esistente.");
       nomeEl.textContent = originalName;
-      
-      // riapri editing dopo un attimo
       setTimeout(() => nomeEl.focus(), 10);
       return;
     }
 
-    // ✅ valido
     salvaNome(id, nuovoNome);
     cleanup(true);
   });
@@ -1049,7 +1153,6 @@ function abilitaModificaNome(card, id) {
   function mostraErrore(msg) {
     nomeEl.classList.add("error");
     errorEl.textContent = msg;
-
     const wrapper = nomeEl.closest(".card-title-wrapper");
     if (!wrapper.contains(errorEl)) {
       wrapper.appendChild(errorEl);
@@ -1063,120 +1166,69 @@ function abilitaModificaNome(card, id) {
     nomeEl.scrollLeft = 0;
     errorEl.remove();
 
-    // ritarda la rimozione della classe per bloccare il click
     card.dataset.justExitedEdit = "true";
-    
     setTimeout(() => {
       card.classList.remove("editing-nome");
       card.dataset.justExitedEdit = "false";
-    }, 100); // 100ms di ritardo per evitare il click
-  }
-}
-
-function nomeGiaEsistente(nome, currentId) {
-  const ricette = JSON.parse(localStorage.getItem("ricette")) || [];
-  return ricette.some(
-    r => r.nome.toLowerCase() === nome.toLowerCase() && r.id !== currentId
-  );
-}
-
-function mostraErroreNomeInput() {
-  const input = document.getElementById("nome-ricetta");
-  const error = document.getElementById("nome-ricetta-error");
-
-  input.classList.add("error");
-  error.textContent = "Nome ricetta già esistente.";
-  error.style.display = "block";
-}
-
-function salvaNome(id, nuovoNome) {
-  const ricette = JSON.parse(localStorage.getItem("ricette")) || [];
-
-  const ricetta = ricette.find(r => r.id === id);
-  if (!ricetta) return;
-
-  ricetta.nome = nuovoNome;
-  localStorage.setItem("ricette", JSON.stringify(ricette));
-}
-
-function placeCaretAtEnd(el) {
-  const range = document.createRange();
-  range.selectNodeContents(el);
-  range.collapse(false);
-
-  const sel = window.getSelection();
-  sel.removeAllRanges();
-  sel.addRange(range);
-}
-
-function enableAutoScrollOnEdit(el) {
-  el.addEventListener("keyup", () => autoScrollCursor(el));
-  el.addEventListener("click", () => autoScrollCursor(el));
-}
-
-function autoScrollCursor(el) {
-  const selection = window.getSelection();
-  if (!selection.rangeCount) return;
-
-  const range = selection.getRangeAt(0).cloneRange();
-  const rect = range.getBoundingClientRect();
-  const elRect = el.getBoundingClientRect();
-
-  const padding = 12;
-
-  if (rect.right > elRect.right - padding) {
-    el.scrollLeft += rect.right - elRect.right + padding;
-  } else if (rect.left < elRect.left + padding) {
-    el.scrollLeft -= elRect.left + padding - rect.left;
+    }, TIMING.RITARDO_EDIT_EXIT);
   }
 }
 
 
+// ======================================================
+// 13. INTERAZIONI - Carica Ricetta
+// ======================================================
+
+/**
+ * Imposta il nome ricetta nel calcolatore
+ * @param {string} nome - Nome ricetta
+ */
+function impostaNomeRicettaCalcolatore(nome) {
+  const el = document.getElementById("nomeRicetta");
+  if (!el) return;
+  el.value = nome;
+}
+
+/**
+ * Carica una ricetta nel calcolatore
+ * @param {number} id - ID ricetta
+ */
 function caricaRicettaDaPagina(id) {
   vaiAPagina("home", "Calcolatore per Ricette");
-  
+
   document.querySelectorAll(".riga").forEach(r => r.remove());
 
-  const ricette = JSON.parse(localStorage.getItem("ricette")) || [];
+  const ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
   const ricetta = ricette.find(r => r.id === id);
 
   if (!ricetta) {
-    alert("Ricetta non trovata");
+    alert(MESSAGGI_ERRORE.RICETTA_NON_TROVATA);
     return;
   }
-  
+
   setTimeout(() => {
     document.querySelectorAll(".riga").forEach(r => r.remove());
-
     impostaNomeRicettaCalcolatore(ricetta.nome);
 
-    // =============================
-    // CARICA PORZIONI "SAREBBE"
-    // =============================
     const inputSarebbe = document.querySelector(".input-sarebbe-num");
     const selectSarebbe = document.querySelector(".select-sarebbe-tipo");
-    const selectVorrei  = document.querySelector(".select-vorrei-tipo");
+    const selectVorrei = document.querySelector(".select-vorrei-tipo");
     const inputVorrei = document.querySelector(".input-vorrei-num");
 
     if (inputSarebbe && selectSarebbe) {
-      inputSarebbe.value = ricetta.porzioni ?? 1;
+      inputSarebbe.value = ricetta.porzioni ?? LIMITI_PORZIONI.MIN;
       selectSarebbe.value = ricetta.tipoPorzioni ?? "porzioni";
 
-      // il destro segue il sinistro (lock)
       if (selectVorrei) {
         selectVorrei.value = selectSarebbe.value;
       }
-      
-      // RESET "VORREI"
+
       if (inputVorrei) {
         inputVorrei.value = "";
-        inputVorrei.classList.remove("auto-changed"); // se usi il bordo giallo
+        inputVorrei.classList.remove("auto-changed");
       }
     }
 
-    // =============================
-    // INGREDIENTI
-    // =============================
     ricetta.ingredienti.forEach(ing => {
       aggiungiRiga(ing.nome, ing.originale, ing.unita, "");
     });
@@ -1185,74 +1237,57 @@ function caricaRicettaDaPagina(id) {
   }, 0);
 }
 
-function impostaNomeRicettaCalcolatore(nome) {
-  const el = document.getElementById("nomeRicetta");
-  if (!el) return;
-  el.value = nome;
-}
 
+// ======================================================
+// 14. INTERAZIONI - Swipe
+// ======================================================
 
+/**
+ * Abilita il gesto swipe per eliminare
+ * @param {HTMLElement} wrapper - Wrapper ricetta
+ * @param {HTMLElement} card - Card ricetta
+ */
 function abilitaSwipe(wrapper, card) {
   let startX = 0;
   let startY = 0;
   let swiping = false;
-  let hasMoved = false;
-  let canSwipe = false; // 🔑 permetti swipe solo dalla zona giusta
-  
-  const RIGHT_ZONE_RATIO = 0.5;
-  const maxSwipe = card.offsetWidth * 0.4;
-  const deleteThreshold = maxSwipe * 0.6;
-  const MOVE_THRESHOLD = 10;
+  let canSwipe = false;
+
+  const maxSwipe = card.offsetWidth * CONFIG_SWIPE.MAX_SWIPE_RATIO;
+  const deleteThreshold = maxSwipe * CONFIG_SWIPE.SOGLIA_ELIMINAZIONE;
 
   wrapper.addEventListener("pointerdown", e => {
-    // ❌ niente swipe sui preferiti
     if (wrapper.dataset.preferita === "1") return;
-    
-    // ❌ elementi interattivi
-    if (
-      e.target.closest(".drag-handle") ||
-      e.target.closest(".ricetta-star") ||
-      e.target.closest(".btn-carica") ||
-      e.target.closest(".edit-nome") ||
-      e.target.closest(".ricetta-nome")
-    ) return;
+
+    if (e.target.closest(".drag-handle, .ricetta-star, .btn-carica, .edit-nome, .ricetta-nome")) {
+      return;
+    }
 
     const rect = card.getBoundingClientRect();
     const startOffsetX = e.clientX - rect.left;
-    
-    // 🔑 determina se POTREBBE essere uno swipe
-    canSwipe = startOffsetX >= rect.width * (1 - RIGHT_ZONE_RATIO);
+    canSwipe = startOffsetX >= rect.width * (1 - CONFIG_SWIPE.ZONA_DESTRA_RATIO);
 
     startX = e.clientX;
     startY = e.clientY;
-    hasMoved = false;
-    
-    // NON attiviamo swiping qui, aspettiamo il movimento
   });
 
   wrapper.addEventListener("pointermove", e => {
-    // se non può fare swipe, esci subito
     if (!canSwipe) return;
-    
+
     const deltaX = e.clientX - startX;
     const deltaY = Math.abs(e.clientY - startY);
 
-    // se movimento verticale eccessivo, annulla
-    if (deltaY > Math.abs(deltaX) * 1.2) {
+    if (deltaY > Math.abs(deltaX) * CONFIG_SWIPE.SOGLIA_VERTICALE_RATIO) {
       canSwipe = false;
       swiping = false;
       card.style.transform = "translateX(0)";
       return;
     }
 
-    // 🔑 attiva swiping SOLO se movimento orizzontale significativo VERSO SINISTRA
-    if (!swiping && deltaX < -MOVE_THRESHOLD) {
+    if (!swiping && deltaX < -CONFIG_SWIPE.SOGLIA_MOVIMENTO) {
       swiping = true;
-      hasMoved = true;
       card.style.transition = "none";
       wrapper.setPointerCapture(e.pointerId);
-      
-      // 🔑 BLOCCA il click event che arriverebbe
       e.preventDefault();
       e.stopPropagation();
     }
@@ -1262,23 +1297,20 @@ function abilitaSwipe(wrapper, card) {
     }
   });
 
-  wrapper.addEventListener("pointerup", e => {
+  wrapper.addEventListener("pointerup", () => {
     if (!swiping) {
-      // 🔑 reset flags
       canSwipe = false;
-      hasMoved = false;
-      return; // lascia passare il click normalmente
+      return;
     }
 
     swiping = false;
     canSwipe = false;
-    hasMoved = false;
     card.style.transition = "transform 0.2s ease";
 
     const translate = parseFloat(card.style.transform.replace("translateX(", "")) || 0;
 
     if (Math.abs(translate) > deleteThreshold) {
-      if (confirm("Eliminare questa ricetta?")) {
+      if (confirm(MESSAGGI_CONFERMA.ELIMINA_RICETTA)) {
         eliminaRicetta(Number(wrapper.dataset.id));
         return;
       }
@@ -1290,49 +1322,49 @@ function abilitaSwipe(wrapper, card) {
   wrapper.addEventListener("pointercancel", () => {
     swiping = false;
     canSwipe = false;
-    hasMoved = false;
     card.style.transform = "translateX(0)";
   });
 }
 
-function eliminaRicetta(id) {
-  let ricette = JSON.parse(localStorage.getItem("ricette")) || [];
-  ricette = ricette.filter(r => r.id !== id);
-  localStorage.setItem("ricette", JSON.stringify(ricette));
-  mostraRicetteSalvate();
+
+// ======================================================
+// 15. INTERAZIONI - Drag & Drop
+// ======================================================
+
+/**
+ * Auto-scroll durante il drag
+ * @param {number} touchY - Posizione Y del touch
+ */
+function autoScroll(touchY) {
+  const topEdge = CONFIG_DRAG.ZONA_AUTO_SCROLL;
+  const bottomEdge = window.innerHeight - CONFIG_DRAG.ZONA_AUTO_SCROLL;
+
+  if (touchY < topEdge) {
+    const intensity = 1 - touchY / topEdge;
+    window.scrollBy(0, -CONFIG_DRAG.VELOCITA_SCROLL_MAX * intensity);
+  } else if (touchY > bottomEdge) {
+    const intensity = (touchY - bottomEdge) / CONFIG_DRAG.ZONA_AUTO_SCROLL;
+    window.scrollBy(0, CONFIG_DRAG.VELOCITA_SCROLL_MAX * intensity);
+  }
 }
 
-
-function togglePreferito(id) {
-  const ricette = JSON.parse(localStorage.getItem("ricette")) || [];
-
-  const ricetta = ricette.find(r => r.id === id);
-  if (!ricetta) return;
-
-  ricetta.preferita = !ricetta.preferita;
-
-  localStorage.setItem("ricette", JSON.stringify(ricette));
-  mostraRicetteSalvate();
-}
-
-
+/**
+ * Abilita il drag & drop per riordinare
+ * @param {HTMLElement} wrapper - Wrapper ricetta
+ */
 function abilitaDrag(wrapper) {
   const handle = wrapper.querySelector(".drag-handle");
   if (!handle) return;
 
-  const CARD_GAP = 10;
-
   let dragging = false;
   let ghost = null;
   let placeholder = null;
-
   let startY = 0;
   let offsetY = 0;
-
-  const container = wrapper.parentNode;
-
   let minY = 0;
   let maxY = 0;
+
+  const container = wrapper.parentNode;
 
   handle.addEventListener("pointerdown", e => {
     e.preventDefault();
@@ -1342,26 +1374,20 @@ function abilitaDrag(wrapper) {
     handle.setPointerCapture(e.pointerId);
 
     const rect = wrapper.getBoundingClientRect();
-
     const header = document.querySelector(".topbar");
-    const headerBottom = header
-      ? header.getBoundingClientRect().bottom
-      : 0;
+    const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
 
-    minY = headerBottom + CARD_GAP;
-    maxY = window.innerHeight - rect.height - CARD_GAP;
+    minY = headerBottom + CONFIG_DRAG.GAP_CARD;
+    maxY = window.innerHeight - rect.height - CONFIG_DRAG.GAP_CARD;
 
     startY = e.clientY;
     offsetY = startY - rect.top;
 
-    // 🔹 placeholder al posto ESATTO
     placeholder = document.createElement("div");
     placeholder.className = "ricetta-placeholder";
     placeholder.style.height = rect.height + "px";
-
     container.insertBefore(placeholder, wrapper);
 
-    // 🔹 wrapper diventa ghost
     ghost = wrapper;
     ghost.classList.add("ricetta-ghost");
     ghost.style.top = rect.top + "px";
@@ -1381,21 +1407,14 @@ function abilitaDrag(wrapper) {
     if (!dragging) return;
 
     const header = document.querySelector(".topbar");
-    const headerBottom = header
-      ? header.getBoundingClientRect().bottom
-      : 0;
-
-    minY = headerBottom + CARD_GAP;
-    maxY = window.innerHeight - ghost.offsetHeight - CARD_GAP;
+    const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
+    minY = headerBottom + CONFIG_DRAG.GAP_CARD;
+    maxY = window.innerHeight - ghost.offsetHeight - CONFIG_DRAG.GAP_CARD;
 
     let y = e.clientY - offsetY;
-
-    // 🔒 clamp aggiornato
-    y = Math.max(minY, y);
-    y = Math.min(maxY, y);
+    y = Math.max(minY, Math.min(maxY, y));
 
     ghost.style.top = y + "px";
-
     autoScroll(e.clientY);
 
     const ghostRect = ghost.getBoundingClientRect();
@@ -1435,52 +1454,23 @@ function abilitaDrag(wrapper) {
     ghost.style.width = "";
 
     placeholder.remove();
-
     salvaOrdineDaDOM();
   });
 }
 
-function salvaOrdineDaDOM() {
-  const wrappers = document.querySelectorAll(".ricetta-swipe");
-  const ricette = JSON.parse(localStorage.getItem("ricette")) || [];
 
-  const nuovaLista = [];
-
-  wrappers.forEach(w => {
-    const id = Number(w.dataset.id);
-    const ricetta = ricette.find(r => r.id === id);
-    if (ricetta) nuovaLista.push(ricetta);
-  });
-
-  localStorage.setItem("ricette", JSON.stringify(nuovaLista));
-}
-
-function autoScroll(touchY) {
-  const edge = 80;
-  const maxSpeed = 10;
-
-  const topEdge = edge;
-  const bottomEdge = window.innerHeight - edge;
-
-  if (touchY < topEdge) {
-    const intensity = 1 - touchY / topEdge;
-    window.scrollBy(0, -maxSpeed * intensity);
-  } 
-  else if (touchY > bottomEdge) {
-    const intensity = (touchY - bottomEdge) / edge;
-    window.scrollBy(0, maxSpeed * intensity);
-  }
-}
-
-function getScrollbarWidth() {
-  return window.innerWidth - document.documentElement.clientWidth;
-}
-
+// ======================================================
+// 16. POPUP - Gestione Ricetta
+// ======================================================
 
 let ricettaCorrenteId = null;
 
+/**
+ * Apre il popup di modifica ricetta
+ * @param {number} id - ID ricetta
+ */
 function apriPopupRicetta(id) {
-  const ricette = JSON.parse(localStorage.getItem("ricette")) || [];
+  const ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
   const ricetta = ricette.find(r => r.id === id);
   if (!ricetta) return;
 
@@ -1490,22 +1480,15 @@ function apriPopupRicetta(id) {
   overlay.classList.remove("hidden");
   document.body.classList.add("no-scroll");
 
-  // ===== HEADER =====
   overlay.querySelector(".popup-title").textContent = ricetta.nome;
 
   const porzioniInput = overlay.querySelector(".input-porzioni");
-  porzioniInput.value = ricetta.porzioni ?? 1;
-  
-  overlay.querySelector(".select-porzioni-tipo").value =
-  ricetta.tipoPorzioni ?? "porzioni";
+  porzioniInput.value = ricetta.porzioni ?? LIMITI_PORZIONI.MIN;
 
-  // ===== LINK =====
+  overlay.querySelector(".select-porzioni-tipo").value = ricetta.tipoPorzioni ?? "porzioni";
   overlay.querySelector(".popup-link").value = ricetta.link ?? "";
-
-  // ===== NOTE =====
   overlay.querySelector(".popup-note").value = ricetta.note ?? "";
 
-  // ===== INGREDIENTI =====
   const contenitore = overlay.querySelector(".popup-ingredienti");
   contenitore.innerHTML = "";
 
@@ -1513,17 +1496,14 @@ function apriPopupRicetta(id) {
     contenitore.appendChild(creaRigaIngredientePopup(ing));
   });
 
-  // ===== AGGIUNGI INGREDIENTE =====
   overlay.querySelector(".popup-add").onclick = () => {
     contenitore.appendChild(creaRigaIngredientePopup());
   };
 
-  // ===== ANNULLA =====
   overlay.querySelector(".popup-annulla").onclick = () => {
     chiudiPopupRicetta();
   };
 
-  // ===== SALVA =====
   overlay.querySelector(".popup-salva").onclick = () => {
     const ok = salvaPopupRicetta();
     if (ok) {
@@ -1532,104 +1512,29 @@ function apriPopupRicetta(id) {
   };
 }
 
-function creaRigaIngredientePopup(ing = {}) {
-  const riga = document.createElement("div");
-  riga.className = "popup-riga";
-
-  riga.innerHTML = `
-    <button class="remove">−</button>
-
-    <!-- COLONNA NOME -->
-    <div class="popup-col popup-col-nome">
-      <input class="popup-nome"
-             placeholder="Ingrediente"
-             value="${ing.nome ?? ""}">
-      <div class="popup-errore popup-errore-nome"></div>
-    </div>
-
-    <!-- COLONNA QUANTITÀ -->
-    <div class="popup-col popup-col-qta">
-      <div class="popup-campo-unita">
-        <input type="text"
-               class="popup-quantita"
-               inputmode="decimal"
-               pattern="[0-9.,]*"
-               placeholder="Quantità"
-               value="${ing.originale ?? ""}">
-        <select class="popup-unita">
-          <option value="g">g</option>
-          <option value="kg">kg</option>
-          <option value="ml">ml</option>
-          <option value="l">l</option>
-          <option value="pz">pz.</option>
-          <option value="qb">q.b.</option>
-        </select>
-      </div>
-      <div class="popup-errore popup-errore-qta"></div>
-    </div>
-  `;
-
-  riga.querySelector(".remove").onclick = () => riga.remove();
-
-  const select = riga.querySelector(".popup-unita");
-  if (ing.unita) select.value = ing.unita;
-
-  select.addEventListener("change", () => {
-    aggiornaStatoQBPopup(riga);
-  });
-
-  aggiornaStatoQBPopup(riga);
-  
-  // ===== RIMOZIONE ERRORI ON INPUT =====
-  const nomeInput = riga.querySelector(".popup-nome");
-  const qtaInput  = riga.querySelector(".popup-quantita");
-  const erroreNomeEl = riga.querySelector(".popup-errore-nome");
-  const erroreQtaEl  = riga.querySelector(".popup-errore-qta");
-
-  // nome ingrediente
-  nomeInput.addEventListener("input", () => {
-    nomeInput.classList.remove("input-errore");
-    erroreNomeEl.textContent = "";
-  });
-
-  // quantità
-  qtaInput.addEventListener("input", () => {
-    qtaInput.classList.remove("input-errore");
-    erroreQtaEl.textContent = "";
-  });
-
-  return riga;
-}
-
+/**
+ * Salva le modifiche dal popup
+ * @returns {boolean} - True se salvato con successo
+ */
 function salvaPopupRicetta() {
   if (!ricettaCorrenteId) return false;
 
-  const ricette = JSON.parse(localStorage.getItem("ricette")) || [];
+  const ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
   const ricetta = ricette.find(r => r.id === ricettaCorrenteId);
   if (!ricetta) return false;
 
   const overlay = document.getElementById("popup-overlay");
 
-  // ===== PORZIONI =====
-  const porzioniVal = Number(
-    overlay.querySelector(".input-porzioni").value
-  );
-  ricetta.porzioni = porzioniVal > 0 ? porzioniVal : 1;
-  ricetta.tipoPorzioni =
-  overlay.querySelector(".select-porzioni-tipo").value;
-
-  // ===== LINK =====
+  const porzioniVal = Number(overlay.querySelector(".input-porzioni").value);
+  ricetta.porzioni = porzioniVal > 0 ? porzioniVal : LIMITI_PORZIONI.MIN;
+  ricetta.tipoPorzioni = overlay.querySelector(".select-porzioni-tipo").value;
   ricetta.link = overlay.querySelector(".popup-link").value.trim();
-
-  // ===== NOTE =====
   ricetta.note = overlay.querySelector(".popup-note").value.trim();
 
-  // ===== INGREDIENTI =====
   const righe = overlay.querySelectorAll(".popup-riga");
   const nuoviIngredienti = [];
-
   let errore = false;
-  
+
   righe.forEach(riga => {
     const nomeInput = riga.querySelector(".popup-nome");
     const inputQta = riga.querySelector(".popup-quantita");
@@ -1637,96 +1542,50 @@ function salvaPopupRicetta() {
     const erroreNomeEl = riga.querySelector(".popup-errore-nome");
     const erroreQtaEl = riga.querySelector(".popup-errore-qta");
 
-
     const nome = nomeInput.value.trim();
     const unita = selectUnita.value;
     const valore = inputQta.value.trim();
 
-    // reset errori
     erroreNomeEl.textContent = "";
     erroreQtaEl.textContent = "";
     nomeInput.classList.remove("input-errore");
     inputQta.classList.remove("input-errore");
 
-    // ❌ nome mancante ma altri campi compilati
     if (!nome && (valore || unita !== "g")) {
       nomeInput.classList.add("input-errore");
-      erroreNomeEl.textContent = "Ingrediente non valido!";
+      erroreNomeEl.textContent = MESSAGGI_ERRORE.INGREDIENTE_NON_VALIDO;
       errore = true;
       return;
     }
 
-    // riga completamente vuota → ignorala
     if (!nome && !valore) return;
 
-    // q.b.
     if (unita === "qb") {
-      nuoviIngredienti.push({
-        nome,
-        originale: null,
-        unita: "qb"
-      });
+      nuoviIngredienti.push({ nome, originale: null, unita: "qb" });
       return;
     }
 
-    const num = leggiNumeroPopup(valore);
+    const num = leggiNumero(valore);
     if (isNaN(num)) {
       inputQta.classList.add("input-errore");
-      erroreQtaEl.textContent = "Quantità non valida!";
+      erroreQtaEl.textContent = MESSAGGI_ERRORE.QUANTITA_NON_VALIDA;
       errore = true;
       return;
     }
 
-    nuoviIngredienti.push({
-      nome,
-      originale: num,
-      unita
-    });
+    nuoviIngredienti.push({ nome, originale: num, unita });
   });
 
-  if (errore) return;
+  if (errore || nuoviIngredienti.length === 0) return false;
 
   ricetta.ingredienti = nuoviIngredienti;
-
-
-  // ❌ errore: non chiudere popup
-  if (errore || nuoviIngredienti.length === 0) {
-    return false;
-  }
-
-  // salva ingredienti
-  ricetta.ingredienti = nuoviIngredienti;
-
-  localStorage.setItem("ricette", JSON.stringify(ricette));
+  localStorage.setItem(STORAGE_KEYS.RICETTE, JSON.stringify(ricette));
   mostraRicetteSalvate();
 
   return true;
 }
 
-function aggiornaStatoQBPopup(riga) {
-  const select = riga.querySelector(".popup-unita");
-  const input = riga.querySelector(".popup-quantita");
-
-  if (select.value === "qb") {
-    input.value = "";
-    input.placeholder = "q.b.";
-    input.disabled = true;
-    input.classList.remove("input-errore");
-  } else {
-    input.disabled = false;
-    input.placeholder = "Quantità";
-  }
-}
-
-function leggiNumeroPopup(valore) {
-  if (valore === "") return NaN;
-
-  const normalizzato = valore.replace(",", ".");
-  if (normalizzato.endsWith(".")) return NaN;
-
-  return parseFloat(normalizzato);
-}
-
+// Chiude il popup ricetta
 function chiudiPopupRicetta() {
   document.getElementById("popup-overlay").classList.add("hidden");
   document.body.classList.remove("no-scroll");
@@ -1734,53 +1593,159 @@ function chiudiPopupRicetta() {
 }
 
 
+// ======================================================
+// 17. NAVIGAZIONE - Menu e Pagine
+// ======================================================
 
-/* =========================
-   BLOCCO CARATTERE "-"
-   ========================= */
-document.addEventListener("input", e => {
-  if (
-    e.target.classList.contains("originale") ||
-    e.target.classList.contains("disponibile") ||
-    e.target.classList.contains("popup-quantita")
-  ) {
-    e.target.value = e.target.value.replace(/[^0-9.,]/g, "");
-  }
-});
-
-
+// Apre il menu laterale
 function apriMenu() {
   document.querySelector(".menu").style.left = "0";
   document.querySelector(".overlay").style.display = "block";
   document.body.classList.add("no-scroll");
 }
 
+// Chiude il menu laterale
 function chiudiMenu() {
-  document.querySelector(".menu").style.left = "-260px";
+  document.querySelector(".menu").style.left = UI.LARGHEZZA_MENU;
   document.querySelector(".overlay").style.display = "none";
   document.body.classList.remove("no-scroll");
 }
 
+/**
+ * Naviga a una pagina dell'applicazione
+ * @param {string} idPagina - ID della pagina
+ * @param {string} titolo - Titolo da mostrare nell'header
+ */
 function vaiAPagina(idPagina, titolo) {
   document.querySelectorAll(".pagina").forEach(p => {
     p.classList.remove("attiva");
   });
 
   document.getElementById(idPagina).classList.add("attiva");
-
   document.getElementById("titoloPagina").textContent = titolo;
 
   chiudiMenu();
-  
-  // 🔽 FIX SCROLL
   window.scrollTo({ top: 0, behavior: "instant" });
-  
+
   if (idPagina === "ricette") {
     mostraRicetteSalvate();
   }
 }
 
 
+// ======================================================
+// 18. INIZIALIZZAZIONE
+// ======================================================
+
+// Limita i valori degli input porzioni tra MIN e MAX
+function limitaValoriMinMax() {
+  const inputs = document.querySelectorAll('.input-sarebbe-num, .input-vorrei-num');
+  inputs.forEach(input => {
+    input.addEventListener('input', function() {
+      let val = parseInt(this.value);
+      if (val > LIMITI_PORZIONI.MAX) this.value = LIMITI_PORZIONI.MAX;
+      if (val < LIMITI_PORZIONI.MIN) this.value = LIMITI_PORZIONI.MIN;
+    });
+  });
+}
+
+// Blocca l'inserimento di caratteri non consentiti negli input porzioni
+function bloccaTastiNonConsentiti() {
+  document.addEventListener("keydown", e => {
+    const input = e.target;
+    if (!input.classList.contains("input-porzioni-calc")) return;
+
+    if (e.key === "+" || e.key === "-") {
+      e.preventDefault();
+      return;
+    }
+
+    if (input.classList.contains("input-sarebbe-num") && (e.key === "." || e.key === ",")) {
+      e.preventDefault();
+    }
+  });
+}
+
+// Sincronizza il select "vorrei" con il select "sarebbe"
+function sincronizzaSelectPorzioni() {
+  document.addEventListener("DOMContentLoaded", () => {
+    const selectSarebbe = document.querySelector(".select-sarebbe-tipo");
+    const selectVorrei = document.querySelector(".select-vorrei-tipo");
+
+    if (!selectSarebbe || !selectVorrei) return;
+
+    selectVorrei.value = selectSarebbe.value;
+    selectVorrei.disabled = true;
+
+    selectSarebbe.addEventListener("change", () => {
+      selectVorrei.value = selectSarebbe.value;
+    });
+  });
+}
+
+// Forza il valore minimo sull'input "sarebbe" quando perde il focus
+function forzaValoreMinimoSarebbe() {
+  const inputSarebbe = document.querySelector('.input-sarebbe-num');
+  if (!inputSarebbe) return;
+
+  inputSarebbe.addEventListener('blur', function() {
+    if (this.value === '' || parseInt(this.value) < LIMITI_PORZIONI.MIN || isNaN(parseInt(this.value))) {
+      this.value = LIMITI_PORZIONI.MIN;
+    }
+  });
+}
+
+// Reset dello stato "auto-changed" sull'input "vorrei" quando l'utente modifica manualmente
+function resetAutoChangedVorrei() {
+  document.addEventListener("input", e => {
+    const input = e.target;
+    if (!input.classList.contains("input-vorrei-num")) return;
+
+    input.classList.remove("auto-changed");
+    input.classList.remove("pulse");
+    delete input.dataset.pulsed;
+  });
+}
+
+// Inizializza tutti i limiti e comportamenti degli input porzioni
+function limitaInputPorzioni() {
+  limitaValoriMinMax();
+  bloccaTastiNonConsentiti();
+  sincronizzaSelectPorzioni();
+  forzaValoreMinimoSarebbe();
+  resetAutoChangedVorrei();
+}
+
+// Righe iniziali
+aggiungiRiga();
+aggiungiRiga();
+
+// Inizializza limiti porzioni
+limitaInputPorzioni();
+
+// Reset errore nome ricetta on input
+const nomeRicettaInput = document.getElementById("nomeRicetta");
+const nomeRicettaErrore = document.getElementById("nome-ricetta-error");
+
+if (nomeRicettaInput) {
+  nomeRicettaInput.addEventListener("input", () => {
+    nomeRicettaInput.classList.remove("error");
+    if (nomeRicettaErrore) {
+      nomeRicettaErrore.textContent = "";
+    }
+  });
+}
+
+// Blocca caratteri non numerici negli input quantità
+document.addEventListener("input", e => {
+  if (e.target.classList.contains("originale") ||
+      e.target.classList.contains("disponibile") ||
+      e.target.classList.contains("popup-quantita")) {
+    e.target.value = e.target.value.replace(/[^0-9.,]/g, "");
+  }
+});
+
+// Ricerca ricette
 document.addEventListener("input", e => {
   if (e.target.id === "ricette-search-input") {
     mostraRicetteSalvate();
@@ -1794,7 +1759,7 @@ document.addEventListener("input", e => {
 // FUORI CODICE ==================================================
 
 if ("serviceWorker" in navigator) {
-  const CURRENT_VERSION = "ricette-v3.5"; // Deve corrispondere alla versione nel service-worker.js
+  const CURRENT_VERSION = "ricette-v3.5.0"; // Deve corrispondere alla versione nel service-worker.js
   const lastReloadVersion = localStorage.getItem("lastReloadVersion");
   
   // Se abbiamo già ricaricato per questa versione, non farlo più
@@ -1862,6 +1827,7 @@ if ("serviceWorker" in navigator) {
     });
   }
 }
+
 
 
 
