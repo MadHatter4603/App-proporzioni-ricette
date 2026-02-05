@@ -14,28 +14,29 @@
 <div class="app">
   
   <!-- BANNER NOTIFICA -->
-  <div id="banner-notifica" class="banner-notifica nascosto">
+  <div id="banner-notifica" class="banner-notifica nascosto" role="alert" aria-live="polite">
     <span id="banner-testo"></span>
-    <button class="chiudi-banner" aria-label="Chiudi">×</button>
+    <button class="chiudi-banner" aria-label="Chiudi notifica">×</button>
   </div>
 
   <!-- HEADER FISSO -->
   <header class="topbar">
-    <button class="hamburger" onclick="apriMenu()">☰</button>
-    <div class="divider"></div>
+    <button class="hamburger" onclick="apriMenu()" aria-label="Apri menu" aria-expanded="false" aria-controls="main-menu">☰</button>
+    <div class="divider" aria-hidden="true"></div>
     <h1 id="titoloPagina">Calcolatore per Ricette</h1>
   </header>
 
   <!-- OVERLAY + MENU -->
-  <div class="overlay" onclick="chiudiMenu()"></div>
+  <div class="overlay" onclick="chiudiMenu()" aria-hidden="true"></div>
 
-  <nav class="menu">
+  <nav class="menu" role="navigation" aria-label="Menu principale">
     <div class="menu-content">
       <h3>Menu</h3>
       <button onclick="vaiAPagina('home', 'Calcolatore per Ricette')">🔢 Calcolatore</button>
       <button onclick="vaiAPagina('ricette', 'Ricette salvate')">📚 Ricette salvate</button>
       <button onclick="vaiAPagina('equivalenze', 'Conversioni')">📏 Conversioni</button>
       <button onclick="vaiAPagina('timer', 'Timer')">⏰ Timer</button>
+      <button onclick="vaiAPagina('impostazioni', 'Impostazioni')">⚙️ Impostazioni</button>
       <button onclick="vaiAPagina('segnalazioni', 'Segnalazioni')">📝 Segnalazioni</button>
       <!-- future pagine -->
     </div>
@@ -44,22 +45,23 @@
     </div>
   </nav>
   
-  
 
   <!-- PAGINE -->
   <main>
 
-    <!-- HOME -->
+    <!-- HOME / CALCOLATORE -->
     <section class="pagina attiva" id="home">
+      
+      <!-- Salvataggio Ricetta -->
       <div class="salvataggio">
         <div class="salvataggio-input">
           <div class="nome-wrapper">
-            <button class="btn-reset" onclick="resetQuantita()">🔄</button>
+            <button class="btn-reset" onclick="resetQuantita()" aria-label="Reset quantità disponibili" title="Reset quantità">🔄</button>
             <input id="nomeRicetta" placeholder="Nome ricetta">  
           </div>
-          <div id="nome-ricetta-error"></div>
+          <div id="nome-ricetta-error" role="alert"></div>
         </div>
-        <button onclick="salvaRicetta()">💾 Salva</button>
+        <button onclick="salvaRicetta()" aria-label="Salva ricetta">💾 Salva</button>
       </div>
       
       <!-- BLOCCO PORZIONI -->
@@ -70,8 +72,15 @@
           <div class="porzioni-label">Sarebbe per:</div>
 
           <div class="porzioni-input">
-            <input type="number" min="1" max="99" value="1" step="1" class="input-porzioni-calc input-sarebbe-num">
-            <select class="select-porzioni-calc select-sarebbe-tipo">
+            <input 
+                   type="number" 
+                   min="1" 
+                   max="99" 
+                   value="1" 
+                   step="1" 
+                   class="input-porzioni-calc input-sarebbe-num" 
+                   aria-label="Numero porzioni originali">
+            <select class="select-porzioni-calc select-sarebbe-tipo" aria-label="Tipo porzioni originali">
               <option value="porzioni">porzioni</option>
               <option value="persone">persone</option>
               <option value="pezzi">pezzi</option>
@@ -80,15 +89,21 @@
         </div>
 
         <!-- SEPARATORE -->
-        <div class="porzioni-divider"></div>
+        <div class="porzioni-divider" aria-hidden="true"></div>
 
         <!-- DESTRA -->
         <div class="porzioni-col">
           <div class="porzioni-label">Vorrei / Posso fare:</div>
 
           <div class="porzioni-input">
-            <input type="number" min="1" step="1" max="99" class="input-porzioni-calc input-vorrei-num">
-            <select class="select-porzioni-calc select-vorrei-tipo">
+            <input 
+                   type="number" 
+                   min="1" 
+                   step="1" 
+                   max="99" 
+                   class="input-porzioni-calc input-vorrei-num" 
+                   aria-label="Numero porzioni desiderate">
+            <select class="select-porzioni-calc select-vorrei-tipo" aria-label="Tipo porzioni desiderate" disabled>
               <option value="porzioni">porzioni</option>
               <option value="persone">persone</option>
               <option value="pezzi">pezzi</option>
@@ -98,9 +113,9 @@
 
       </div>
 
-      <div id="ingredienti"></div>
+      <div id="ingredienti" role="list" aria-label="Lista ingredienti"></div>
 
-      <button class="add" onclick="aggiungiRiga()">+</button>
+      <button class="add" onclick="aggiungiRiga()" aria-label="Aggiungi ingrediente">+</button>
 
       <button class="calcola" onclick="calcola()">Calcola nuove proporzioni</button>
 
@@ -110,12 +125,12 @@
     <section class="pagina" id="ricette">
       <div class="ricette-search">
         <input
-          type="text"
+          type="search"
           id="ricette-search-input"
           placeholder="Cerca ricetta…"
-        >
+          aria-label="Cerca tra le ricette salvate">
       </div>
-      <div id="lista-ricette-pagina" class="lista-ricette"></div>
+      <div id="lista-ricette-pagina" class="lista-ricette" role="list" aria-label="Ricette salvate"></div>
     </section>
 
     <!-- CONVERSIONI -->
@@ -125,6 +140,11 @@
     
     <!-- TIMER -->
     <section class="pagina" id="timer">
+      <p>Coming Soon!</p>
+    </section>
+    
+    <!-- IMPOSTAZIONI -->
+    <section class="pagina" id="impostazioni">
       <p>Coming Soon!</p>
     </section>
     
@@ -138,17 +158,24 @@
 
   </main>
   
-  <div id="popup-overlay" class="popup-overlay hidden">
+  <!-- POPUP MODIFICA RICETTA -->
+  <div id="popup-overlay" class="popup-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="popup-title">
     <div class="popup-ricetta">
 
-      <!-- POPUP HEADER -->
+      <!-- HEADER -->
       <div class="popup-header">
         <span class="popup-title"></span>
 
         <div class="popup-porzioni">
           x
-          <input type="number" min="1" step="1" max="99" class="input-porzioni">
-          <select class="select-porzioni-tipo">
+          <input 
+                 type="number" 
+                 min="1" 
+                 step="1" 
+                 max="99" 
+                 class="input-porzioni" 
+                 aria-label="Numero porzioni">
+          <select class="select-porzioni-tipo" aria-label="Tipo porzioni">
             <option value="porzioni">porzioni</option>
             <option value="persone">persone</option>
             <option value="pezzi">pezzi</option>
@@ -158,14 +185,14 @@
       </div>
 
       <!-- LINK -->
-      <input class="popup-link" placeholder="Link ricetta:">
+      <input class="popup-link" type="url" placeholder="Link ricetta:" aria-label="Link alla ricetta online">
 
       <!-- INGREDIENTI -->
-      <div class="popup-ingredienti"></div>
-      <button class="popup-add">+</button>
+      <div class="popup-ingredienti" role="list" aria-label="Ingredienti della ricetta"></div>
+      <button class="popup-add" aria-label="Aggiungi ingrediente">+</button>
 
       <!-- NOTE -->
-      <textarea class="popup-note" placeholder="Note..."></textarea>
+      <textarea class="popup-note" placeholder="Note..." aria-label="Note sulla ricetta"></textarea>
 
       <!-- FOOTER -->
       <div class="popup-footer">
@@ -176,6 +203,7 @@
     </div>
   </div>
 
+
 </div>
 
 
@@ -183,5 +211,6 @@
 <script src="app.js"></script>
 </body>
 </html>
+
 
 
