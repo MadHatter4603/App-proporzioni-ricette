@@ -1,4 +1,4 @@
-const CACHE = "ricette-v3.5"; // Incrementa
+const CACHE = "ricette-v3.5.0"; // Incrementa
 const STATIC_ASSETS = [
   "style.css",
   "app.js"
@@ -94,6 +94,7 @@ self.addEventListener("fetch", event => {
     })
   );
 });
+
 
 
 
