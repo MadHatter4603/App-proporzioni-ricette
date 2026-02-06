@@ -1,0 +1,98 @@
+{
+  "app_title": "Calcolatore per Ricette",
+  
+  "menu": {
+    "title": "Menu",
+    "calculator": "🔢 Calcolatore",
+    "saved_recipes": "📚 Ricette salvate",
+    "conversions": "📏 Conversioni",
+    "timer": "⏰ Timer",
+    "settings": "⚙️ Impostazioni",
+    "feedback": "📝 Segnalazioni",
+    "footer": "© 2026 – Dario Pazienza"
+  },
+  
+  "calculator": {
+    "recipe_name_placeholder": "Nome ricetta",
+    "save_button": "💾 Salva",
+    "reset_button_title": "Reset quantità",
+    "portions_for": "Sarebbe per:",
+    "portions_want": "Vorrei / Posso fare:",
+    "portions": "porzioni",
+    "people": "persone",
+    "pieces": "pezzi",
+    "ingredient_placeholder": "Ingrediente",
+    "quantity_placeholder": "Quantità",
+    "you_have_placeholder": "Tu hai",
+    "add_ingredient": "Aggiungi ingrediente",
+    "calculate_button": "Calcola nuove proporzioni"
+  },
+  
+  "saved_recipes": {
+    "title": "Ricette salvate",
+    "search_placeholder": "Cerca ricetta…",
+    "load_button": "Carica",
+    "edit_name_title": "Modifica nome",
+    "link_placeholder": "Link ricetta:",
+    "notes_placeholder": "Note..."
+  },
+  
+  "popup": {
+    "cancel": "Annulla",
+    "save": "Salva"
+  },
+  
+  "settings": {
+    "title": "Impostazioni",
+    "language": "Lingua",
+    "select_language": "Seleziona lingua:"
+  },
+  
+  "pages": {
+    "conversions": "Conversioni",
+    "timer": "Timer",
+    "coming_soon": "Coming Soon!",
+    "feedback_text": "Hai trovato un problema o vuoi suggerire miglioramenti?",
+    "feedback_button": "Invia una segnalazione"
+  },
+  
+  "messages": {
+    "recipe_saved": "Ricetta salvata ✔️",
+    "recipe_not_found": "Ricetta non trovata",
+    "ingredients_insufficient": "Non hai abbastanza ingredienti per fare questa ricetta :(",
+    "invalid_number": "Inserire numero valido!",
+    "invalid_ingredient": "Inserire ingrediente valido!",
+    "recipe_name_empty": "Inserire nome ricetta.",
+    "recipe_name_duplicate": "Nome ricetta già esistente.",
+    "inconsistent_units": "Unità incongruenti!",
+    "invalid_quantity": "Quantità non valida!",
+    "no_quantity": "Nessuna quantità da ricalcolare!",
+    "no_ingredient": "Nessun ingrediente valido",
+    "confirm_reset": "Svuotare le caselle con le quantità possedute?",
+    "confirm_delete": "Eliminare questa ricetta?",
+    "invalid_recipe_name": "Nome ricetta non valido.",
+    "recipe_name_exists": "Nome ricetta già esistente."
+  },
+  
+  "aria": {
+    "close_notification": "Chiudi notifica",
+    "open_menu": "Apri menu",
+    "main_menu": "Menu principale",
+    "original_portions": "Numero porzioni originali",
+    "original_portions_type": "Tipo porzioni originali",
+    "desired_portions": "Numero porzioni desiderate",
+    "desired_portions_type": "Tipo porzioni desiderate",
+    "ingredients_list": "Lista ingredienti",
+    "saved_recipes_list": "Ricette salvate",
+    "search_recipes": "Cerca tra le ricette salvate",
+    "recipe_ingredients": "Ingredienti della ricetta",
+    "recipe_notes": "Note sulla ricetta",
+    "recipe_link": "Link alla ricetta online",
+    "portions_number": "Numero porzioni"
+  },
+  
+  "units": {
+    "pz": "pz.",
+    "qb": "q.b."
+  }
+}
