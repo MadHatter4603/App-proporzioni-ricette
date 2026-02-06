@@ -905,7 +905,7 @@ body.dragging {
   transform: none !important;
 }
 
-/* dovrebbe servire per garantire il corretto funzionamento del touch per le varie funzioni che altrimenti vanno in conflitto sulle card delle ricette salvate, però attualmente sta funzionando anche senza */
+/* dovrebbe servire per garantire il corretto funzionamento del touch per le varie funzioni che altrimenti vanno in conflitto sulle card delle ricette salvate, però attualmente sta funzionando anche senza   */
 /*.ricetta-swipe.being-dragged {
   opacity: 0;
   pointer-events: none;
@@ -1151,6 +1151,67 @@ body.no-scroll {
   width: 100%;
 }
 
+
+/* ===================================================
+   PAGINA IMPOSTAZIONI
+   =================================================== */
+
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+}
+
+.setting-item {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+}
+
+.setting-item h3 {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.setting-item label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.language-selector {
+  width: 100%;
+  padding: var(--spacing-md);
+  font-size: 16px;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 44px;
+}
+
+.language-selector:hover {
+  background: #333;
+}
+
+.language-selector:focus {
+  outline: 2px solid var(--color-success);
+  outline-offset: 2px;
+}
+
+.language-selector option {
+  padding: var(--spacing-md);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+
 /* ===================================================
    SEGNALAZIONI
    =================================================== */
@@ -1240,6 +1301,7 @@ body.no-scroll {
 }
 
 
+
 /* ======================================================
    DESKTOP / SCHERMI GRANDI
    ====================================================== */
@@ -1294,6 +1356,7 @@ body.no-scroll {
     background-color: #d3d3d3; /* lo stesso che già usi */
   }
 }
+
 
 
 
