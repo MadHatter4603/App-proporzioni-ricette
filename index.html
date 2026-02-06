@@ -16,35 +16,33 @@
   <!-- BANNER NOTIFICA -->
   <div id="banner-notifica" class="banner-notifica nascosto" role="alert" aria-live="polite">
     <span id="banner-testo"></span>
-    <button class="chiudi-banner" aria-label="Chiudi notifica">×</button>
+    <button class="chiudi-banner" aria-label="Chiudi notifica" data-i18n-attr="aria-label:aria.close_notification">×</button>
   </div>
 
   <!-- HEADER FISSO -->
   <header class="topbar">
-    <button class="hamburger" onclick="apriMenu()" aria-label="Apri menu" aria-expanded="false" aria-controls="main-menu">☰</button>
+    <button class="hamburger" onclick="apriMenu()" aria-label="Apri menu" aria-expanded="false" aria-controls="main-menu" data-i18n-attr="aria-label:aria.open_menu">☰</button>
     <div class="divider" aria-hidden="true"></div>
-    <h1 id="titoloPagina">Calcolatore per Ricette</h1>
+    <h1 id="titoloPagina" data-i18n="app_title">Calcolatore per Ricette</h1>
   </header>
 
   <!-- OVERLAY + MENU -->
   <div class="overlay" onclick="chiudiMenu()" aria-hidden="true"></div>
 
-  <nav class="menu" role="navigation" aria-label="Menu principale">
+  <nav class="menu" role="navigation" aria-label="Menu principale" data-i18n-attr="aria-label:aria.main_menu">
     <div class="menu-content">
-      <h3>Menu</h3>
-      <button onclick="vaiAPagina('home', 'Calcolatore per Ricette')">🔢 Calcolatore</button>
-      <button onclick="vaiAPagina('ricette', 'Ricette salvate')">📚 Ricette salvate</button>
-      <button onclick="vaiAPagina('equivalenze', 'Conversioni')">📏 Conversioni</button>
-      <button onclick="vaiAPagina('timer', 'Timer')">⏰ Timer</button>
-      <button onclick="vaiAPagina('impostazioni', 'Impostazioni')">⚙️ Impostazioni</button>
-      <button onclick="vaiAPagina('segnalazioni', 'Segnalazioni')">📝 Segnalazioni</button>
-      <!-- future pagine -->
+      <h3 data-i18n="menu.title">Menu</h3>
+      <button onclick="vaiAPagina('home', i18n.t('app_title'))" data-i18n="menu.calculator">🔢 Calcolatore</button>
+      <button onclick="vaiAPagina('ricette', i18n.t('saved_recipes.title'))" data-i18n="menu.saved_recipes">📚 Ricette salvate</button>
+      <button onclick="vaiAPagina('equivalenze', i18n.t('pages.conversions'))" data-i18n="menu.conversions">📏 Conversioni</button>
+      <button onclick="vaiAPagina('timer', i18n.t('pages.timer'))" data-i18n="menu.timer">⏰ Timer</button>
+      <button onclick="vaiAPagina('impostazioni', i18n.t('settings.title'))" data-i18n="menu.settings">⚙️ Impostazioni</button>
+      <button onclick="vaiAPagina('segnalazioni', i18n.t('menu.feedback'))" data-i18n="menu.feedback">📝 Segnalazioni</button>
     </div>
-    <div class="menu-footer">
+    <div class="menu-footer" data-i18n="menu.footer">
       © 2026 – Dario Pazienza
     </div>
   </nav>
-  
 
   <!-- PAGINE -->
   <main>
@@ -56,12 +54,12 @@
       <div class="salvataggio">
         <div class="salvataggio-input">
           <div class="nome-wrapper">
-            <button class="btn-reset" onclick="resetQuantita()" aria-label="Reset quantità disponibili" title="Reset quantità">🔄</button>
-            <input id="nomeRicetta" placeholder="Nome ricetta">  
+            <button class="btn-reset" onclick="resetQuantita()" aria-label="Reset quantità disponibili" title="Reset quantità" data-i18n-attr="aria-label:calculator.reset_button_title;title:calculator.reset_button_title">🔄</button>
+            <input id="nomeRicetta" placeholder="Nome ricetta" data-i18n-attr="placeholder:calculator.recipe_name_placeholder">  
           </div>
           <div id="nome-ricetta-error" role="alert"></div>
         </div>
-        <button onclick="salvaRicetta()" aria-label="Salva ricetta">💾 Salva</button>
+        <button onclick="salvaRicetta()" aria-label="Salva ricetta" data-i18n="calculator.save_button" data-i18n-attr="aria-label:calculator.save_button">💾 Salva</button>
       </div>
       
       <!-- BLOCCO PORZIONI -->
@@ -69,7 +67,7 @@
 
         <!-- SINISTRA -->
         <div class="porzioni-col">
-          <div class="porzioni-label">Sarebbe per:</div>
+          <div class="porzioni-label" data-i18n="calculator.portions_for">Sarebbe per:</div>
 
           <div class="porzioni-input">
             <input 
@@ -79,11 +77,12 @@
                    value="1" 
                    step="1" 
                    class="input-porzioni-calc input-sarebbe-num" 
-                   aria-label="Numero porzioni originali">
-            <select class="select-porzioni-calc select-sarebbe-tipo" aria-label="Tipo porzioni originali">
-              <option value="porzioni">porzioni</option>
-              <option value="persone">persone</option>
-              <option value="pezzi">pezzi</option>
+                   aria-label="Numero porzioni originali"
+                   data-i18n-attr="aria-label:aria.original_portions">
+            <select class="select-porzioni-calc select-sarebbe-tipo" aria-label="Tipo porzioni originali" data-i18n-attr="aria-label:aria.original_portions_type">
+              <option value="porzioni" data-i18n="calculator.portions">porzioni</option>
+              <option value="persone" data-i18n="calculator.people">persone</option>
+              <option value="pezzi" data-i18n="calculator.pieces">pezzi</option>
             </select>
           </div>
         </div>
@@ -93,7 +92,7 @@
 
         <!-- DESTRA -->
         <div class="porzioni-col">
-          <div class="porzioni-label">Vorrei / Posso fare:</div>
+          <div class="porzioni-label" data-i18n="calculator.portions_want">Vorrei / Posso fare:</div>
 
           <div class="porzioni-input">
             <input 
@@ -102,22 +101,23 @@
                    step="1" 
                    max="99" 
                    class="input-porzioni-calc input-vorrei-num" 
-                   aria-label="Numero porzioni desiderate">
-            <select class="select-porzioni-calc select-vorrei-tipo" aria-label="Tipo porzioni desiderate" disabled>
-              <option value="porzioni">porzioni</option>
-              <option value="persone">persone</option>
-              <option value="pezzi">pezzi</option>
+                   aria-label="Numero porzioni desiderate"
+                   data-i18n-attr="aria-label:aria.desired_portions">
+            <select class="select-porzioni-calc select-vorrei-tipo" aria-label="Tipo porzioni desiderate" disabled data-i18n-attr="aria-label:aria.desired_portions_type">
+              <option value="porzioni" data-i18n="calculator.portions">porzioni</option>
+              <option value="persone" data-i18n="calculator.people">persone</option>
+              <option value="pezzi" data-i18n="calculator.pieces">pezzi</option>
             </select>
           </div>
         </div>
 
       </div>
 
-      <div id="ingredienti" role="list" aria-label="Lista ingredienti"></div>
+      <div id="ingredienti" role="list" aria-label="Lista ingredienti" data-i18n-attr="aria-label:aria.ingredients_list"></div>
 
-      <button class="add" onclick="aggiungiRiga()" aria-label="Aggiungi ingrediente">+</button>
+      <button class="add" onclick="aggiungiRiga()" aria-label="Aggiungi ingrediente" data-i18n-attr="aria-label:calculator.add_ingredient">+</button>
 
-      <button class="calcola" onclick="calcola()">Calcola nuove proporzioni</button>
+      <button class="calcola" onclick="calcola()" data-i18n="calculator.calculate_button">Calcola nuove proporzioni</button>
 
     </section>
 
@@ -128,30 +128,42 @@
           type="search"
           id="ricette-search-input"
           placeholder="Cerca ricetta…"
-          aria-label="Cerca tra le ricette salvate">
+          aria-label="Cerca tra le ricette salvate"
+          data-i18n-attr="placeholder:saved_recipes.search_placeholder;aria-label:aria.search_recipes">
       </div>
-      <div id="lista-ricette-pagina" class="lista-ricette" role="list" aria-label="Ricette salvate"></div>
+      <div id="lista-ricette-pagina" class="lista-ricette" role="list" aria-label="Ricette salvate" data-i18n-attr="aria-label:aria.saved_recipes_list"></div>
     </section>
 
     <!-- CONVERSIONI -->
     <section class="pagina" id="equivalenze">
-      <p>Coming Soon!</p>
+      <p data-i18n="pages.coming_soon">Coming Soon!</p>
     </section>
     
     <!-- TIMER -->
     <section class="pagina" id="timer">
-      <p>Coming Soon!</p>
+      <p data-i18n="pages.coming_soon">Coming Soon!</p>
     </section>
     
     <!-- IMPOSTAZIONI -->
     <section class="pagina" id="impostazioni">
-      <p>Coming Soon!</p>
+      <div class="settings-container">
+        <div class="setting-item">
+          <h3 data-i18n="settings.language">Lingua</h3>
+          <label for="language-select" data-i18n="settings.select_language">Seleziona lingua:</label>
+          <select id="language-select" class="language-selector">
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="es">🇪🇸 Español</option>
+          </select>
+        </div>
+      </div>
     </section>
     
     <!-- SEGNALAZIONI -->
     <section class="pagina" id="segnalazioni">
-      <p>Hai trovato un problema o vuoi suggerire miglioramenti?</p>
-      <a href="https://forms.gle/YqQvXbDP6EZrBLjx7" target="_blank" class="btn-segnalazione">
+      <p data-i18n="pages.feedback_text">Hai trovato un problema o vuoi suggerire miglioramenti?</p>
+      <a href="https://forms.gle/YqQvXbDP6EZrBLjx7" target="_blank" class="btn-segnalazione" data-i18n="pages.feedback_button">
         Invia una segnalazione
       </a>
     </section>
@@ -174,35 +186,35 @@
                  step="1" 
                  max="99" 
                  class="input-porzioni" 
-                 aria-label="Numero porzioni">
-          <select class="select-porzioni-tipo" aria-label="Tipo porzioni">
-            <option value="porzioni">porzioni</option>
-            <option value="persone">persone</option>
-            <option value="pezzi">pezzi</option>
+                 aria-label="Numero porzioni"
+                 data-i18n-attr="aria-label:aria.portions_number">
+          <select class="select-porzioni-tipo" aria-label="Tipo porzioni" data-i18n-attr="aria-label:aria.original_portions_type">
+            <option value="porzioni" data-i18n="calculator.portions">porzioni</option>
+            <option value="persone" data-i18n="calculator.people">persone</option>
+            <option value="pezzi" data-i18n="calculator.pieces">pezzi</option>
           </select>
 
         </div>
       </div>
 
       <!-- LINK -->
-      <input class="popup-link" type="url" placeholder="Link ricetta:" aria-label="Link alla ricetta online">
+      <input class="popup-link" type="url" placeholder="Link ricetta:" aria-label="Link alla ricetta online" data-i18n-attr="placeholder:saved_recipes.link_placeholder;aria-label:aria.recipe_link">
 
       <!-- INGREDIENTI -->
-      <div class="popup-ingredienti" role="list" aria-label="Ingredienti della ricetta"></div>
-      <button class="popup-add" aria-label="Aggiungi ingrediente">+</button>
+      <div class="popup-ingredienti" role="list" aria-label="Ingredienti della ricetta" data-i18n-attr="aria-label:aria.recipe_ingredients"></div>
+      <button class="popup-add" aria-label="Aggiungi ingrediente" data-i18n-attr="aria-label:calculator.add_ingredient">+</button>
 
       <!-- NOTE -->
-      <textarea class="popup-note" placeholder="Note..." aria-label="Note sulla ricetta"></textarea>
+      <textarea class="popup-note" placeholder="Note..." aria-label="Note sulla ricetta" data-i18n-attr="placeholder:saved_recipes.notes_placeholder;aria-label:aria.recipe_notes"></textarea>
 
       <!-- FOOTER -->
       <div class="popup-footer">
-        <button class="popup-annulla">Annulla</button>
-        <button class="popup-salva">Salva</button>
+        <button class="popup-annulla" data-i18n="popup.cancel">Annulla</button>
+        <button class="popup-salva" data-i18n="popup.save">Salva</button>
       </div>
 
     </div>
   </div>
-
 
 </div>
 
@@ -211,6 +223,7 @@
 <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
