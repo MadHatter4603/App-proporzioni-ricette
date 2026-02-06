@@ -1,8 +1,467 @@
 // ======================================================
+// 0. SISTEMA INTERNAZIONALIZZAZIONE (i18n)
+// ======================================================
+
+const i18n = {
+  currentLang: 'it',
+  translations: {},
+  
+  // Traduzioni inline per CodePen
+  inlineTranslations: {
+    it: {
+      "app_title": "Calcolatore per Ricette",
+      "menu": {
+        "title": "Menu",
+        "calculator": "🔢 Calcolatore",
+        "saved_recipes": "📚 Ricette salvate",
+        "conversions": "📏 Conversioni",
+        "timer": "⏰ Timer",
+        "settings": "⚙️ Impostazioni",
+        "feedback": "📝 Segnalazioni",
+        "footer": "© 2026 – Dario Pazienza"
+      },
+      "calculator": {
+        "recipe_name_placeholder": "Nome ricetta",
+        "save_button": "💾 Salva",
+        "reset_button_title": "Reset quantità",
+        "portions_for": "Sarebbe per:",
+        "portions_want": "Vorrei / Posso fare:",
+        "portions": "porzioni",
+        "people": "persone",
+        "pieces": "pezzi",
+        "ingredient_placeholder": "Ingrediente",
+        "quantity_placeholder": "Quantità",
+        "you_have_placeholder": "Tu hai",
+        "add_ingredient": "Aggiungi ingrediente",
+        "calculate_button": "Calcola nuove proporzioni"
+      },
+      "saved_recipes": {
+        "title": "Ricette salvate",
+        "search_placeholder": "Cerca ricetta…",
+        "load_button": "Carica",
+        "edit_name_title": "Modifica nome",
+        "link_placeholder": "Link ricetta:",
+        "notes_placeholder": "Note..."
+      },
+      "popup": {
+        "cancel": "Annulla",
+        "save": "Salva"
+      },
+      "settings": {
+        "title": "Impostazioni",
+        "language": "Lingua",
+        "select_language": "Seleziona lingua:"
+      },
+      "pages": {
+        "conversions": "Conversioni",
+        "timer": "Timer",
+        "coming_soon": "Coming Soon!",
+        "feedback_text": "Hai trovato un problema o vuoi suggerire miglioramenti?",
+        "feedback_button": "Invia una segnalazione"
+      },
+      "messages": {
+        "recipe_saved": "Ricetta salvata ✔️",
+        "recipe_not_found": "Ricetta non trovata",
+        "ingredients_insufficient": "Non hai abbastanza ingredienti per fare questa ricetta :(",
+        "invalid_number": "Inserire numero valido!",
+        "invalid_ingredient": "Inserire ingrediente valido!",
+        "recipe_name_empty": "Inserire nome ricetta.",
+        "recipe_name_duplicate": "Nome ricetta già esistente.",
+        "inconsistent_units": "Unità incongruenti!",
+        "invalid_quantity": "Quantità non valida!",
+        "no_quantity": "Nessuna quantità da ricalcolare!",
+        "no_ingredient": "Nessun ingrediente valido",
+        "confirm_reset": "Svuotare le caselle con le quantità possedute?",
+        "confirm_delete": "Eliminare questa ricetta?",
+        "invalid_recipe_name": "Nome ricetta non valido.",
+        "recipe_name_exists": "Nome ricetta già esistente."
+      },
+      "aria": {
+        "close_notification": "Chiudi notifica",
+        "open_menu": "Apri menu",
+        "main_menu": "Menu principale",
+        "original_portions": "Numero porzioni originali",
+        "original_portions_type": "Tipo porzioni originali",
+        "desired_portions": "Numero porzioni desiderate",
+        "desired_portions_type": "Tipo porzioni desiderate",
+        "ingredients_list": "Lista ingredienti",
+        "saved_recipes_list": "Ricette salvate",
+        "search_recipes": "Cerca tra le ricette salvate",
+        "recipe_ingredients": "Ingredienti della ricetta",
+        "recipe_notes": "Note sulla ricetta",
+        "recipe_link": "Link alla ricetta online",
+        "portions_number": "Numero porzioni"
+      },
+      "units": {
+        "qb": "q.b."
+      }
+    },
+    
+    en: {
+      "app_title": "Recipe Calculator",
+      "menu": {
+        "title": "Menu",
+        "calculator": "🔢 Calculator",
+        "saved_recipes": "📚 Saved Recipes",
+        "conversions": "📏 Conversions",
+        "timer": "⏰ Timer",
+        "settings": "⚙️ Settings",
+        "feedback": "📝 Feedback",
+        "footer": "© 2026 – Dario Pazienza"
+      },
+      "calculator": {
+        "recipe_name_placeholder": "Recipe name",
+        "save_button": "💾 Save",
+        "reset_button_title": "Reset quantities",
+        "portions_for": "Recipe is for:",
+        "portions_want": "I want / Can make:",
+        "portions": "servings",
+        "people": "people",
+        "pieces": "pieces",
+        "ingredient_placeholder": "Ingredient",
+        "quantity_placeholder": "Quantity",
+        "you_have_placeholder": "You have",
+        "add_ingredient": "Add ingredient",
+        "calculate_button": "Calculate new proportions"
+      },
+      "saved_recipes": {
+        "title": "Saved Recipes",
+        "search_placeholder": "Search recipe…",
+        "load_button": "Load",
+        "edit_name_title": "Edit name",
+        "link_placeholder": "Recipe link:",
+        "notes_placeholder": "Notes..."
+      },
+      "popup": {
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "settings": {
+        "title": "Settings",
+        "language": "Language",
+        "select_language": "Select language:"
+      },
+      "pages": {
+        "conversions": "Conversions",
+        "timer": "Timer",
+        "coming_soon": "Coming Soon!",
+        "feedback_text": "Found a problem or want to suggest improvements?",
+        "feedback_button": "Send feedback"
+      },
+      "messages": {
+        "recipe_saved": "Recipe saved ✔️",
+        "recipe_not_found": "Recipe not found",
+        "ingredients_insufficient": "You don't have enough ingredients for this recipe :(",
+        "invalid_number": "Please enter a valid number!",
+        "invalid_ingredient": "Please enter a valid ingredient!",
+        "recipe_name_empty": "Please enter recipe name.",
+        "recipe_name_duplicate": "Recipe name already exists.",
+        "inconsistent_units": "Inconsistent units!",
+        "invalid_quantity": "Invalid quantity!",
+        "no_quantity": "No quantity to recalculate!",
+        "no_ingredient": "No valid ingredient",
+        "confirm_reset": "Clear the fields with available quantities?",
+        "confirm_delete": "Delete this recipe?",
+        "invalid_recipe_name": "Invalid recipe name.",
+        "recipe_name_exists": "Recipe name already exists."
+      },
+      "aria": {
+        "close_notification": "Close notification",
+        "open_menu": "Open menu",
+        "main_menu": "Main menu",
+        "original_portions": "Original portions number",
+        "original_portions_type": "Original portions type",
+        "desired_portions": "Desired portions number",
+        "desired_portions_type": "Desired portions type",
+        "ingredients_list": "Ingredients list",
+        "saved_recipes_list": "Saved recipes",
+        "search_recipes": "Search among saved recipes",
+        "recipe_ingredients": "Recipe ingredients",
+        "recipe_notes": "Recipe notes",
+        "recipe_link": "Link to online recipe",
+        "portions_number": "Portions number"
+      },
+      "units": {
+        "qb": "t.t."
+      }
+    },
+    
+    fr: {
+      "app_title": "Calculateur de Recettes",
+      "menu": {
+        "title": "Menu",
+        "calculator": "🔢 Calculateur",
+        "saved_recipes": "📚 Recettes sauvegardées",
+        "conversions": "📏 Conversions",
+        "timer": "⏰ Minuteur",
+        "settings": "⚙️ Paramètres",
+        "feedback": "📝 Commentaires",
+        "footer": "© 2026 – Dario Pazienza"
+      },
+      "calculator": {
+        "recipe_name_placeholder": "Nom de la recette",
+        "save_button": "💾 Sauvegarder",
+        "reset_button_title": "Réinitialiser quantités",
+        "portions_for": "Recette pour:",
+        "portions_want": "Je veux / Peux faire:",
+        "portions": "portions",
+        "people": "personnes",
+        "pieces": "pièces",
+        "ingredient_placeholder": "Ingrédient",
+        "quantity_placeholder": "Quantité",
+        "you_have_placeholder": "Vous avez",
+        "add_ingredient": "Ajouter ingrédient",
+        "calculate_button": "Calculer nouvelles proportions"
+      },
+      "saved_recipes": {
+        "title": "Recettes sauvegardées",
+        "search_placeholder": "Rechercher recette…",
+        "load_button": "Charger",
+        "edit_name_title": "Modifier nom",
+        "link_placeholder": "Lien recette:",
+        "notes_placeholder": "Notes..."
+      },
+      "popup": {
+        "cancel": "Annuler",
+        "save": "Sauvegarder"
+      },
+      "settings": {
+        "title": "Paramètres",
+        "language": "Langue",
+        "select_language": "Sélectionner langue:"
+      },
+      "pages": {
+        "conversions": "Conversions",
+        "timer": "Minuteur",
+        "coming_soon": "Bientôt disponible!",
+        "feedback_text": "Vous avez trouvé un problème ou souhaitez suggérer des améliorations?",
+        "feedback_button": "Envoyer commentaire"
+      },
+      "messages": {
+        "recipe_saved": "Recette sauvegardée ✔️",
+        "recipe_not_found": "Recette non trouvée",
+        "ingredients_insufficient": "Vous n'avez pas assez d'ingrédients pour cette recette :(",
+        "invalid_number": "Veuillez saisir un nombre valide!",
+        "invalid_ingredient": "Veuillez saisir un ingrédient valide!",
+        "recipe_name_empty": "Veuillez saisir le nom de la recette.",
+        "recipe_name_duplicate": "Le nom de la recette existe déjà.",
+        "inconsistent_units": "Unités incohérentes!",
+        "invalid_quantity": "Quantité non valide!",
+        "no_quantity": "Aucune quantité à recalculer!",
+        "no_ingredient": "Aucun ingrédient valide",
+        "confirm_reset": "Vider les champs avec les quantités disponibles?",
+        "confirm_delete": "Supprimer cette recette?",
+        "invalid_recipe_name": "Nom de recette non valide.",
+        "recipe_name_exists": "Le nom de la recette existe déjà."
+      },
+      "aria": {
+        "close_notification": "Fermer notification",
+        "open_menu": "Ouvrir menu",
+        "main_menu": "Menu principal",
+        "original_portions": "Nombre de portions originales",
+        "original_portions_type": "Type de portions originales",
+        "desired_portions": "Nombre de portions désirées",
+        "desired_portions_type": "Type de portions désirées",
+        "ingredients_list": "Liste des ingrédients",
+        "saved_recipes_list": "Recettes sauvegardées",
+        "search_recipes": "Rechercher parmi les recettes sauvegardées",
+        "recipe_ingredients": "Ingrédients de la recette",
+        "recipe_notes": "Notes sur la recette",
+        "recipe_link": "Lien vers recette en ligne",
+        "portions_number": "Nombre de portions"
+      },
+      "units": {
+        "qb": "s.n."
+      }
+    },
+    
+    es: {
+      "app_title": "Calculadora de Recetas",
+      "menu": {
+        "title": "Menú",
+        "calculator": "🔢 Calculadora",
+        "saved_recipes": "📚 Recetas guardadas",
+        "conversions": "📏 Conversiones",
+        "timer": "⏰ Temporizador",
+        "settings": "⚙️ Configuración",
+        "feedback": "📝 Comentarios",
+        "footer": "© 2026 – Dario Pazienza"
+      },
+      "calculator": {
+        "recipe_name_placeholder": "Nombre de receta",
+        "save_button": "💾 Guardar",
+        "reset_button_title": "Restablecer cantidades",
+        "portions_for": "Receta para:",
+        "portions_want": "Quiero / Puedo hacer:",
+        "portions": "porciones",
+        "people": "personas",
+        "pieces": "piezas",
+        "ingredient_placeholder": "Ingrediente",
+        "quantity_placeholder": "Cantidad",
+        "you_have_placeholder": "Tienes",
+        "add_ingredient": "Añadir ingrediente",
+        "calculate_button": "Calcular nuevas proporciones"
+      },
+      "saved_recipes": {
+        "title": "Recetas guardadas",
+        "search_placeholder": "Buscar receta…",
+        "load_button": "Cargar",
+        "edit_name_title": "Editar nombre",
+        "link_placeholder": "Enlace receta:",
+        "notes_placeholder": "Notas..."
+      },
+      "popup": {
+        "cancel": "Cancelar",
+        "save": "Guardar"
+      },
+      "settings": {
+        "title": "Configuración",
+        "language": "Idioma",
+        "select_language": "Seleccionar idioma:"
+      },
+      "pages": {
+        "conversions": "Conversiones",
+        "timer": "Temporizador",
+        "coming_soon": "¡Próximamente!",
+        "feedback_text": "¿Encontraste un problema o quieres sugerir mejoras?",
+        "feedback_button": "Enviar comentario"
+      },
+      "messages": {
+        "recipe_saved": "Receta guardada ✔️",
+        "recipe_not_found": "Receta no encontrada",
+        "ingredients_insufficient": "No tienes suficientes ingredientes para esta receta :(",
+        "invalid_number": "¡Por favor ingresa un número válido!",
+        "invalid_ingredient": "¡Por favor ingresa un ingrediente válido!",
+        "recipe_name_empty": "Por favor ingresa el nombre de la receta.",
+        "recipe_name_duplicate": "El nombre de la receta ya existe.",
+        "inconsistent_units": "¡Unidades inconsistentes!",
+        "invalid_quantity": "¡Cantidad no válida!",
+        "no_quantity": "¡No hay cantidad para recalcular!",
+        "no_ingredient": "Ningún ingrediente válido",
+        "confirm_reset": "¿Vaciar los campos con las cantidades disponibles?",
+        "confirm_delete": "¿Eliminar esta receta?",
+        "invalid_recipe_name": "Nombre de receta no válido.",
+        "recipe_name_exists": "El nombre de la receta ya existe."
+      },
+      "aria": {
+        "close_notification": "Cerrar notificación",
+        "open_menu": "Abrir menú",
+        "main_menu": "Menú principal",
+        "original_portions": "Número de porciones originales",
+        "original_portions_type": "Tipo de porciones originales",
+        "desired_portions": "Número de porciones deseadas",
+        "desired_portions_type": "Tipo de porciones deseadas",
+        "ingredients_list": "Lista de ingredientes",
+        "saved_recipes_list": "Recetas guardadas",
+        "search_recipes": "Buscar entre las recetas guardadas",
+        "recipe_ingredients": "Ingredientes de la receta",
+        "recipe_notes": "Notas sobre la receta",
+        "recipe_link": "Enlace a receta en línea",
+        "portions_number": "Número de porciones"
+      },
+      "units": {
+        "qb": "c/n"
+      }
+    }
+  },
+  
+  async init() {
+    this.currentLang = localStorage.getItem('app_language') || 'it';
+    
+    try {
+      const response = await fetch(`i18n/${this.currentLang}.json`);
+      if (response.ok) {
+        this.translations[this.currentLang] = await response.json();
+      } else {
+        throw new Error('File non trovato');
+      }
+    } catch (error) {
+      this.translations[this.currentLang] = this.inlineTranslations[this.currentLang];
+    }
+    
+    this.updateUI();
+    
+    const langSelect = document.getElementById('language-select');
+    if (langSelect) {
+      langSelect.value = this.currentLang;
+      langSelect.addEventListener('change', (e) => this.changeLanguage(e.target.value));
+    }
+  },
+  
+  t(key) {
+    const keys = key.split('.');
+    let value = this.translations[this.currentLang];
+    
+    for (const k of keys) {
+      if (value && typeof value === 'object') {
+        value = value[k];
+      } else {
+        return key;
+      }
+    }
+    
+    return value || key;
+  },
+  
+  async changeLanguage(lang) {
+    this.currentLang = lang;
+    localStorage.setItem('app_language', lang);
+    
+    if (!this.translations[lang]) {
+      try {
+        const response = await fetch(`i18n/${lang}.json`);
+        if (response.ok) {
+          this.translations[lang] = await response.json();
+        } else {
+          throw new Error('File non trovato');
+        }
+      } catch (error) {
+        this.translations[lang] = this.inlineTranslations[lang];
+      }
+    }
+    
+    this.updateUI();
+    document.documentElement.lang = lang;
+  },
+  
+  updateUI() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      el.textContent = this.t(key);
+    });
+    
+    document.querySelectorAll('[data-i18n-attr]').forEach(el => {
+      const attrs = el.getAttribute('data-i18n-attr').split(';');
+      attrs.forEach(attr => {
+        const [attrName, key] = attr.split(':');
+        if (attrName && key) {
+          el.setAttribute(attrName.trim(), this.t(key.trim()));
+        }
+      });
+    });
+    
+    document.title = this.t('app_title');
+    
+    // Aggiorna placeholder delle righe ingredienti esistenti
+    if (typeof aggiornaPlaceholderRighe === 'function') {
+      aggiornaPlaceholderRighe();
+    }
+    
+    // Aggiorna le card delle ricette salvate se visibili
+    const listaRicette = document.getElementById('lista-ricette-pagina');
+    if (listaRicette && listaRicette.children.length > 0) {
+      if (typeof mostraRicetteSalvate === 'function') {
+        mostraRicetteSalvate();
+      }
+    }
+  }
+};
+
+
+// ======================================================
 // 1. COSTANTI E CONFIGURAZIONE
 // ======================================================
 
-// Unità di misura supportate con fattori di conversione 
 const UNITA = {
   g:   { tipo: "peso",   base: "g",  fattore: 1 },
   kg:  { tipo: "peso",   base: "g",  fattore: 1000 },
@@ -12,7 +471,6 @@ const UNITA = {
   qb:  { tipo: "qb",     base: "qb", fattore: 1 }
 };
 
-// Numero di decimali per ogni unità di misura
 const DECIMALI_UNITA = {
   g: 0,
   ml: 0,
@@ -22,70 +480,39 @@ const DECIMALI_UNITA = {
   qb: null
 };
 
-// Limiti per le porzioni
 const LIMITI_PORZIONI = {
   MIN: 1,
   MAX: 99
 };
 
-// Configurazione gesture swipe
 const CONFIG_SWIPE = {
-  ZONA_DESTRA_RATIO: 0.5, // Zona da cui iniziare lo swipe (50% a destra)
-  MAX_SWIPE_RATIO: 0.4, // Massimo swipe possibile (40% della larghezza)
-  SOGLIA_ELIMINAZIONE: 0.6, // Soglia per eliminazione (60% del max swipe)
-  SOGLIA_MOVIMENTO: 10, // Pixel minimi per attivare lo swipe
-  SOGLIA_VERTICALE_RATIO: 1.2 // Tolleranza movimento verticale vs orizzontale
+  ZONA_DESTRA_RATIO: 0.5,
+  MAX_SWIPE_RATIO: 0.4,
+  SOGLIA_ELIMINAZIONE: 0.6,
+  SOGLIA_MOVIMENTO: 10,
+  SOGLIA_VERTICALE_RATIO: 1.2
 };
 
-// Configurazione drag & drop
 const CONFIG_DRAG = {
-  GAP_CARD: 10, // Gap tra le card durante il drag
-  ZONA_AUTO_SCROLL: 80, // Pixel dal bordo per auto-scroll
-  VELOCITA_SCROLL_MAX: 10 // Velocità massima auto-scroll
+  GAP_CARD: 10,
+  ZONA_AUTO_SCROLL: 80,
+  VELOCITA_SCROLL_MAX: 10
 };
 
-// Timing e animazioni
 const TIMING = {
-  DURATA_BANNER: 3000, // Durata notifica banner (ms)
-  ANIMAZIONE_FADE: 600, // Durata fade-out banner (ms)
-  ANIMAZIONE_PULSE: 600, // Durata pulse su input modificato (ms)
-  RITARDO_EDIT_EXIT: 100, // Ritardo dopo uscita da editing (ms)
-  PADDING_SCROLL_CURSOR: 12 // Padding per auto-scroll del cursore
+  DURATA_BANNER: 3000,
+  ANIMAZIONE_FADE: 600,
+  ANIMAZIONE_PULSE: 600,
+  RITARDO_EDIT_EXIT: 100,
+  PADDING_SCROLL_CURSOR: 12
 };
 
-// Dimensioni UI
 const UI = {
-  LARGHEZZA_MENU: "-260px"      // Larghezza menu laterale
+  LARGHEZZA_MENU: "-260px"
 };
 
-//Chiavi localStorage
 const STORAGE_KEYS = {
   RICETTE: "ricette"
-};
-
-// Messaggi di errore
-const MESSAGGI_ERRORE = {
-  NUMERO_NON_VALIDO: "Inserire numero valido!",
-  INGREDIENTE_NON_VALIDO: "Inserire ingrediente valido!",
-  NOME_RICETTA_VUOTO: "Inserire nome ricetta.",
-  NOME_RICETTA_DUPLICATO: "Nome ricetta già esistente.",
-  UNITA_INCONGRUENTI: "Unità incongruenti!",
-  QUANTITA_NON_VALIDA: "Quantità non valida!",
-  NESSUNA_QUANTITA: "Nessuna quantità da ricalcolare!",
-  NESSUN_INGREDIENTE: "Nessun ingrediente valido",
-  INGREDIENTI_INSUFFICIENTI: "Non hai abbastanza ingredienti per fare questa ricetta :(",
-  RICETTA_NON_TROVATA: "Ricetta non trovata"
-};
-
-// Messaggi di conferma
-const MESSAGGI_CONFERMA = {
-  RESET_QUANTITA: "Svuotare le caselle con le quantità possedute?",
-  ELIMINA_RICETTA: "Eliminare questa ricetta?"
-};
-
-// Messaggi di successo
-const MESSAGGI_SUCCESSO = {
-  RICETTA_SALVATA: "Ricetta salvata ✔️"
 };
 
 
@@ -93,11 +520,6 @@ const MESSAGGI_SUCCESSO = {
 // 2. UTILITY - Parsing e Conversioni
 // ======================================================
 
-/**
- * Converte una stringa in numero, gestendo virgole e punti
- * @param {string} valore - Stringa da convertire
- * @returns {number} - Numero convertito o NaN
- */
 function leggiNumero(valore) {
   if (valore === "") return NaN;
   const normalizzato = valore.replace(",", ".");
@@ -105,36 +527,18 @@ function leggiNumero(valore) {
   return parseFloat(normalizzato);
 }
 
-/**
- * Converte un valore nell'unità base
- * @param {number} valore - Valore da convertire
- * @param {string} unita - Unità di partenza
- * @returns {number|null} - Valore in unità base o null se qb
- */
 function toBase(valore, unita) {
   const info = UNITA[unita];
   if (!info || info.base === "qb") return null;
   return valore * info.fattore;
 }
 
-/**
- * Converte un valore dall'unità base all'unità desiderata
- * @param {number} valoreBase - Valore in unità base
- * @param {string} unita - Unità di destinazione
- * @returns {number|null} - Valore convertito o null se qb
- */
 function fromBase(valoreBase, unita) {
   const info = UNITA[unita];
   if (!info || info.base === "qb") return null;
   return valoreBase / info.fattore;
 }
 
-/**
- * Normalizza un valore in base all'unità più appropriata
- * @param {number} valoreBase - Valore in unità base
- * @param {string} tipo - Tipo di misura (peso, volume, pezzi)
- * @returns {Object} - {valore, unita}
- */
 function normalizzaUnita(valoreBase, tipo) {
   if (tipo === "peso") {
     if (valoreBase >= 1000) return { valore: valoreBase / 1000, unita: "kg" };
@@ -153,12 +557,6 @@ function normalizzaUnita(valoreBase, tipo) {
   return { valore: valoreBase, unita: null };
 }
 
-/**
- * Formatta un valore con il numero di decimali appropriato
- * @param {number} valore - Valore da formattare
- * @param {string} unita - Unità di misura
- * @returns {string|number} - Valore formattato
- */
 function formattaValore(valore, unita) {
   const decimali = DECIMALI_UNITA[unita];
   if (decimali === null || decimali === undefined) return "";
@@ -170,18 +568,10 @@ function formattaValore(valore, unita) {
 // 3. UTILITY - DOM e Scroll
 // ======================================================
 
-/**
- * Calcola la larghezza della scrollbar
- * @returns {number} - Larghezza in pixel
- */
 function getScrollbarWidth() {
   return window.innerWidth - document.documentElement.clientWidth;
 }
 
-/**
- * Posiziona il cursore alla fine di un elemento contentEditable
- * @param {HTMLElement} el - Elemento da manipolare
- */
 function placeCaretAtEnd(el) {
   const range = document.createRange();
   range.selectNodeContents(el);
@@ -191,10 +581,6 @@ function placeCaretAtEnd(el) {
   sel.addRange(range);
 }
 
-/**
- * Auto-scroll per mantenere il cursore visibile durante la digitazione
- * @param {HTMLElement} el - Elemento contentEditable
- */
 function autoScrollCursor(el) {
   const selection = window.getSelection();
   if (!selection.rangeCount) return;
@@ -211,19 +597,11 @@ function autoScrollCursor(el) {
   }
 }
 
-/**
- * Abilita l'auto-scroll su un elemento durante l'editing
- * @param {HTMLElement} el - Elemento contentEditable
- */
 function enableAutoScrollOnEdit(el) {
   el.addEventListener("keyup", () => autoScrollCursor(el));
   el.addEventListener("click", () => autoScrollCursor(el));
 }
 
-/**
- * Esegue una callback preservando la posizione di scroll
- * @param {Function} callback - Funzione da eseguire
- */
 function preservaScroll(callback) {
   const scrollY = window.scrollY;
   callback();
@@ -237,36 +615,24 @@ function preservaScroll(callback) {
 // 4. GESTIONE ERRORI UI
 // ======================================================
 
-/**
- * Mostra un errore numerico su un input
- * @param {HTMLElement} input - Input da marcare come errato
- */
 function mostraErroreNumero(input) {
   input.classList.add("input-errore");
   let msg = input.parentElement.querySelector(".messaggio-errore");
   if (!msg) {
     msg = document.createElement("div");
     msg.className = "messaggio-errore";
-    msg.textContent = MESSAGGI_ERRORE.NUMERO_NON_VALIDO;
+    msg.textContent = i18n.t('messages.invalid_number');
     input.parentElement.appendChild(msg);
   }
   msg.style.display = "block";
 }
 
-/**
- * Nasconde l'errore numerico su un input
- * @param {HTMLElement} input - Input da cui rimuovere l'errore
- */
 function nascondiErroreNumero(input) {
   input.classList.remove("input-errore");
   const msg = input.parentElement.querySelector(".messaggio-errore");
   if (msg) msg.style.display = "none";
 }
 
-/**
- * Mostra un errore su un selettore di unità
- * @param {HTMLElement} select - Select da marcare come errato
- */
 function mostraErroreUnita(select) {
   select.classList.add("select-errore");
   const campo = select.closest(".campo-unita");
@@ -274,16 +640,12 @@ function mostraErroreUnita(select) {
   if (!msg) {
     msg = document.createElement("div");
     msg.className = "errore-unita";
-    msg.textContent = MESSAGGI_ERRORE.UNITA_INCONGRUENTI;
+    msg.textContent = i18n.t('messages.inconsistent_units');
     campo.appendChild(msg);
   }
   msg.style.display = "block";
 }
 
-/**
- * Rimuove l'errore unità da una riga
- * @param {HTMLElement} riga - Riga ingrediente
- */
 function rimuoviErroreUnita(riga) {
   const selectHai = riga.querySelector(".unita-hai");
   selectHai.classList.remove("select-errore");
@@ -291,25 +653,17 @@ function rimuoviErroreUnita(riga) {
   if (msg) msg.style.display = "none";
 }
 
-/**
- * Mostra un errore sul nome ingrediente
- * @param {HTMLElement} input - Input del nome
- */
 function mostraErroreNomeIngrediente(input) {
   input.classList.add("input-errore");
   let errore = input.parentElement.querySelector(".errore-nome");
   if (!errore) {
     errore = document.createElement("div");
     errore.className = "errore errore-nome";
-    errore.textContent = MESSAGGI_ERRORE.INGREDIENTE_NON_VALIDO;
+    errore.textContent = i18n.t('messages.invalid_ingredient');
     input.parentElement.appendChild(errore);
   }
 }
 
-/**
- * Reset di tutti gli errori di una riga
- * @param {HTMLElement} riga - Riga ingrediente
- */
 function resetErroriRiga(riga) {
   const nomeInput = riga.querySelector(".nome");
   if (nomeInput) {
@@ -330,10 +684,6 @@ function resetErroriRiga(riga) {
   rimuoviErroreUnita(riga);
 }
 
-/**
- * Rimuove l'errore quando l'utente inizia a digitare
- * @param {HTMLElement} input - Input da monitorare
- */
 function rimuoviErroreOnInput(input) {
   if (!input) return;
   input.addEventListener("input", () => {
@@ -348,11 +698,6 @@ function rimuoviErroreOnInput(input) {
 
 let bannerTimeout = null;
 
-/**
- * Mostra una notifica banner
- * @param {string} messaggio - Testo da mostrare
- * @param {number} durata - Durata in millisecondi
- */
 function mostraBanner(messaggio, durata = TIMING.DURATA_BANNER) {
   const banner = document.getElementById("banner-notifica");
   const testo = document.getElementById("banner-testo");
@@ -383,10 +728,6 @@ function mostraBanner(messaggio, durata = TIMING.DURATA_BANNER) {
 // 6. GESTIONE STATO QB (Quanto Basta)
 // ======================================================
 
-/**
- * Aggiorna lo stato degli input quando l'unità è "q.b."
- * @param {HTMLElement} riga - Riga ingrediente
- */
 function aggiornaStatoInputQB(riga) {
   const selectQuantita = riga.querySelector(".unita");
   const inputQuantita = riga.querySelector(".originale");
@@ -395,41 +736,37 @@ function aggiornaStatoInputQB(riga) {
 
   if (selectQuantita.value === "qb") {
     inputQuantita.value = "";
-    inputQuantita.placeholder = "q.b.";
+    inputQuantita.placeholder = i18n.t('units.qb');
     inputQuantita.disabled = true;
     nascondiErroreNumero(inputQuantita);
 
     selectHai.value = "qb";
     selectHai.disabled = true;
     inputHai.value = "";
-    inputHai.placeholder = "q.b.";
+    inputHai.placeholder = i18n.t('units.qb');
     inputHai.disabled = true;
     nascondiErroreNumero(inputHai);
   } else {
     inputQuantita.disabled = false;
-    inputQuantita.placeholder = "Quantità";
+    inputQuantita.placeholder = i18n.t('calculator.quantity_placeholder');
     inputHai.disabled = false;
-    inputHai.placeholder = "Tu hai";
+    inputHai.placeholder = i18n.t('calculator.you_have_placeholder');
     selectHai.disabled = false;
   }
 }
 
-/**
- * Aggiorna lo stato QB nel popup
- * @param {HTMLElement} riga - Riga popup
- */
 function aggiornaStatoQBPopup(riga) {
   const select = riga.querySelector(".popup-unita");
   const input = riga.querySelector(".popup-quantita");
 
   if (select.value === "qb") {
     input.value = "";
-    input.placeholder = "q.b.";
+    input.placeholder = i18n.t('units.qb');
     input.disabled = true;
     input.classList.remove("input-errore");
   } else {
     input.disabled = false;
-    input.placeholder = "Quantità";
+    input.placeholder = i18n.t('calculator.quantity_placeholder');
   }
 }
 
@@ -438,14 +775,6 @@ function aggiornaStatoQBPopup(riga) {
 // 7. COMPONENTI - Righe Ingredienti
 // ======================================================
 
-/**
- * Aggiunge una nuova riga ingrediente al calcolatore
- * @param {string} nome - Nome ingrediente
- * @param {string} originale - Quantità originale
- * @param {string} unita - Unità di misura
- * @param {string} hai - Quantità disponibile
- * @param {string} unitaHai - Unità quantità disponibile
- */
 function aggiungiRiga(nome = "", originale = "", unita = "g", hai = "", unitaHai = "g") {
   const contenitore = document.getElementById("ingredienti");
   const riga = document.createElement("div");
@@ -453,36 +782,35 @@ function aggiungiRiga(nome = "", originale = "", unita = "g", hai = "", unitaHai
 
   riga.innerHTML = `
     <button class="remove" onclick="this.parentElement.remove()">−</button>
-    <input class="nome" placeholder="Ingrediente" value="${nome}">
+    <input class="nome" placeholder="${i18n.t('calculator.ingredient_placeholder')}" value="${nome}">
     <div class="campo-unita quantita">
       <input class="originale" type="text" inputmode="decimal" pattern="[0-9.,]*" 
-             placeholder="Quantità" value="${originale != null ? originale : ""}">
+             placeholder="${i18n.t('calculator.quantity_placeholder')}" value="${originale != null ? originale : ""}">
       <select class="unita">
         <option value="g">g</option>
         <option value="kg">kg</option>
         <option value="ml">ml</option>
         <option value="l">l</option>
-        <option value="pz">pz.</option>
-        <option value="qb">q.b.</option>
+        <option value="pz">${i18n.t('units.pz')}</option>
+        <option value="qb">${i18n.t('units.qb')}</option>
       </select>
     </div>
     <div class="campo-unita tu-hai">
       <input class="disponibile" type="text" inputmode="decimal" pattern="[0-9.,]*" 
-             placeholder="Tu hai" value="${hai != null ? hai : ""}">
+             placeholder="${i18n.t('calculator.you_have_placeholder')}" value="${hai != null ? hai : ""}">
       <select class="unita-hai">
         <option value="g">g</option>
         <option value="kg">kg</option>
         <option value="ml">ml</option>
         <option value="l">l</option>
-        <option value="pz">pz.</option>
-        <option value="qb">q.b.</option>
+        <option value="pz">${i18n.t('units.pz')}</option>
+        <option value="qb">${i18n.t('units.qb')}</option>
       </select>
     </div>
   `;
 
   contenitore.appendChild(riga);
 
-  // Reset errore nome ingrediente on input
   const nomeInput = riga.querySelector(".nome");
   nomeInput.addEventListener("input", () => {
     nomeInput.classList.remove("input-errore");
@@ -490,7 +818,6 @@ function aggiungiRiga(nome = "", originale = "", unita = "g", hai = "", unitaHai
     if (errore) errore.remove();
   });
 
-  // Imposta unità salvate
   const selectOrig = riga.querySelector(".unita");
   const selectHai = riga.querySelector(".unita-hai");
   selectOrig.value = unita;
@@ -508,11 +835,6 @@ function aggiungiRiga(nome = "", originale = "", unita = "g", hai = "", unitaHai
   aggiornaStatoInputQB(riga);
 }
 
-/**
- * Crea una riga ingrediente per il popup
- * @param {Object} ing - Oggetto ingrediente {nome, originale, unita}
- * @returns {HTMLElement} - Elemento riga creato
- */
 function creaRigaIngredientePopup(ing = {}) {
   const riga = document.createElement("div");
   riga.className = "popup-riga";
@@ -520,20 +842,20 @@ function creaRigaIngredientePopup(ing = {}) {
   riga.innerHTML = `
     <button class="remove">−</button>
     <div class="popup-col popup-col-nome">
-      <input class="popup-nome" placeholder="Ingrediente" value="${ing.nome ?? ""}">
+      <input class="popup-nome" placeholder="${i18n.t('calculator.ingredient_placeholder')}" value="${ing.nome ?? ""}">
       <div class="popup-errore popup-errore-nome"></div>
     </div>
     <div class="popup-col popup-col-qta">
       <div class="popup-campo-unita">
         <input type="text" class="popup-quantita" inputmode="decimal" pattern="[0-9.,]*" 
-               placeholder="Quantità" value="${ing.originale ?? ""}">
+               placeholder="${i18n.t('calculator.quantity_placeholder')}" value="${ing.originale ?? ""}">
         <select class="popup-unita">
           <option value="g">g</option>
           <option value="kg">kg</option>
           <option value="ml">ml</option>
           <option value="l">l</option>
-          <option value="pz">pz.</option>
-          <option value="qb">q.b.</option>
+          <option value="pz">${i18n.t('units.pz')}</option>
+          <option value="qb">${i18n.t('units.qb')}</option>
         </select>
       </div>
       <div class="popup-errore popup-errore-qta"></div>
@@ -548,7 +870,6 @@ function creaRigaIngredientePopup(ing = {}) {
   select.addEventListener("change", () => aggiornaStatoQBPopup(riga));
   aggiornaStatoQBPopup(riga);
 
-  // Rimozione errori on input
   const nomeInput = riga.querySelector(".popup-nome");
   const qtaInput = riga.querySelector(".popup-quantita");
   const erroreNomeEl = riga.querySelector(".popup-errore-nome");
@@ -572,10 +893,6 @@ function creaRigaIngredientePopup(ing = {}) {
 // 8. BUSINESS LOGIC - Calcoli
 // ======================================================
 
-/**
- * Legge i valori delle porzioni dal calcolatore
- * @returns {Object} - {sarebbe: {valore, tipo}, vorrei: {valore, tipo}}
- */
 function leggiPorzioniCalcolatore() {
   return {
     sarebbe: {
@@ -591,7 +908,6 @@ function leggiPorzioniCalcolatore() {
   };
 }
 
-// Calcola le nuove proporzioni degli ingredienti
 function calcola() {
   const righe = document.querySelectorAll(".riga");
   const inputVorrei = document.querySelector(".input-vorrei-num");
@@ -606,7 +922,6 @@ function calcola() {
   let rapporti = [];
   let erroreTrovato = false;
 
-  // PRIMA PASSATA: Validazione + Calcolo rapporti
   righe.forEach(riga => {
     const originaleInput = riga.querySelector(".originale");
     const disponibileInput = riga.querySelector(".disponibile");
@@ -652,7 +967,6 @@ function calcola() {
 
   if (erroreTrovato) return;
 
-  // Fattore porzioni
   const porzioni = leggiPorzioniCalcolatore();
   let fattorePorzioni = null;
 
@@ -660,7 +974,6 @@ function calcola() {
     fattorePorzioni = porzioni.vorrei.valore / porzioni.sarebbe.valore;
   }
 
-  // Scelta fattore limitante
   let fattori = [];
   if (rapporti.length > 0) {
     fattori.push(Math.min(...rapporti));
@@ -670,13 +983,12 @@ function calcola() {
   }
 
   if (fattori.length === 0) {
-    alert(MESSAGGI_ERRORE.NESSUNA_QUANTITA);
+    alert(i18n.t('messages.no_quantity'));
     return;
   }
 
   const fattore = Math.min(...fattori);
 
-  // SECONDA PASSATA: Scrittura risultati
   let almenoUnoZero = false;
 
   righe.forEach(riga => {
@@ -707,7 +1019,6 @@ function calcola() {
     }
   });
 
-  // Aggiorna porzioni "vorrei"
   if (porzioni.sarebbe.valore !== null && inputVorrei) {
     const risultatoPorzioni = porzioni.sarebbe.valore * fattore;
     const valoreCalcolato = Number(risultatoPorzioni.toFixed(1));
@@ -735,13 +1046,12 @@ function calcola() {
   if (almenoUnoZero) {
     const bannerNotifica = document.querySelector(".banner-notifica");
     bannerNotifica.classList.add("sad");
-    mostraBanner(MESSAGGI_ERRORE.INGREDIENTI_INSUFFICIENTI);
+    mostraBanner(i18n.t('messages.ingredients_insufficient'));
   }
 }
 
-// Reset delle quantità disponibili
 function resetQuantita() {
-  const conferma = confirm(MESSAGGI_CONFERMA.RESET_QUANTITA);
+  const conferma = confirm(i18n.t('messages.confirm_reset'));
   if (!conferma) return;
 
   const inputVorrei = document.querySelector(".input-vorrei-num");
@@ -774,10 +1084,6 @@ function resetQuantita() {
 // 9. BUSINESS LOGIC - Salvataggio
 // ======================================================
 
-/**
- * Legge i dati della ricetta dall'interfaccia del calcolatore
- * @returns {Array|null} - Array di ingredienti o null se ci sono errori
- */
 function leggiRicettaDaUI() {
   const righe = document.querySelectorAll(".riga");
   const ingredienti = [];
@@ -794,27 +1100,23 @@ function leggiRicettaDaUI() {
     nomeInput.classList.remove("input-errore");
     originaleInput.classList.remove("input-errore");
 
-    // Riga completamente vuota
     if (!nome && !valoreRaw) {
       resetErroriRiga(riga);
       return;
     }
 
-    // Quantità piena MA nome vuoto
     if (!nome && valoreRaw) {
       mostraErroreNomeIngrediente(nomeInput);
       erroreIngrediente = true;
       return;
     }
 
-    // Nome pieno MA quantità vuota (e NON è q.b.)
     if (nome && !valoreRaw && unita !== "qb") {
       mostraErroreNumero(originaleInput);
       erroreIngrediente = true;
       return;
     }
 
-    // Caso q.b.
     if (unita === "qb") {
       ingredienti.push({ nome, originale: null, unita: "qb" });
       return;
@@ -834,7 +1136,6 @@ function leggiRicettaDaUI() {
   return ingredienti;
 }
 
-// Salva la ricetta corrente
 function salvaRicetta() {
   const inputNome = document.getElementById("nomeRicetta");
   const nome = inputNome.value.trim();
@@ -845,13 +1146,13 @@ function salvaRicetta() {
 
   if (!nome) {
     inputNome.classList.add("error");
-    errorEl.textContent = MESSAGGI_ERRORE.NOME_RICETTA_VUOTO;
+    errorEl.textContent = i18n.t('messages.recipe_name_empty');
     return;
   }
 
   if (nomeGiaEsistente(nome)) {
     inputNome.classList.add("error");
-    errorEl.textContent = MESSAGGI_ERRORE.NOME_RICETTA_DUPLICATO;
+    errorEl.textContent = i18n.t('messages.recipe_name_duplicate');
     return;
   }
 
@@ -860,7 +1161,7 @@ function salvaRicetta() {
   if (!ingredienti) return;
 
   if (ingredienti.length === 0) {
-    alert(MESSAGGI_ERRORE.NESSUN_INGREDIENTE);
+    alert(i18n.t('messages.no_ingredient'));
     return;
   }
 
@@ -878,15 +1179,9 @@ function salvaRicetta() {
   localStorage.setItem(STORAGE_KEYS.RICETTE, JSON.stringify(salvate));
 
   mostraRicetteSalvate();
-  mostraBanner(MESSAGGI_SUCCESSO.RICETTA_SALVATA);
+  mostraBanner(i18n.t('messages.recipe_saved'));
 }
 
-/**
- * Verifica se un nome ricetta esiste già
- * @param {string} nome - Nome da verificare
- * @param {number} currentId - ID ricetta corrente (per escluderla dal controllo)
- * @returns {boolean} - True se esiste
- */
 function nomeGiaEsistente(nome, currentId) {
   const ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
   return ricette.some(
@@ -894,11 +1189,6 @@ function nomeGiaEsistente(nome, currentId) {
   );
 }
 
-/**
- * Salva il nome modificato di una ricetta
- * @param {number} id - ID ricetta
- * @param {string} nuovoNome - Nuovo nome
- */
 function salvaNome(id, nuovoNome) {
   const ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
   const ricetta = ricette.find(r => r.id === id);
@@ -912,10 +1202,6 @@ function salvaNome(id, nuovoNome) {
 // 10. STORAGE - LocalStorage
 // ======================================================
 
-/**
- * Elimina una ricetta
- * @param {number} id - ID ricetta da eliminare
- */
 function eliminaRicetta(id) {
   let ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
   ricette = ricette.filter(r => r.id !== id);
@@ -923,10 +1209,6 @@ function eliminaRicetta(id) {
   mostraRicetteSalvate();
 }
 
-/**
- * Toggle stato preferito di una ricetta
- * @param {number} id - ID ricetta
- */
 function togglePreferito(id) {
   const ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
   const ricetta = ricette.find(r => r.id === id);
@@ -936,11 +1218,9 @@ function togglePreferito(id) {
   mostraRicetteSalvate();
 }
 
-// Salva l'ordine delle ricette dal DOM
 function salvaOrdineDaDOM() {
   const filtro = leggiFiltroRicette();
   if (filtro) {
-    // NON salvare ordine se la lista è filtrata
     return;
   }
   
@@ -962,20 +1242,11 @@ function salvaOrdineDaDOM() {
 // 11. RENDERING - Lista Ricette
 // ======================================================
 
-/**
- * Legge il filtro di ricerca
- * @returns {string} - Testo del filtro (lowercase)
- */
 function leggiFiltroRicette() {
   const input = document.getElementById("ricette-search-input");
   return input ? input.value.trim().toLowerCase() : "";
 }
 
-/**
- * Crea una singola card ricetta con tutti i suoi event listener
- * @param {Object} ricetta - Dati ricetta
- * @returns {HTMLElement} - Wrapper della card creato
- */
 function creaCardRicetta(ricetta) {
   const wrapper = document.createElement("div");
   wrapper.className = "ricetta-swipe";
@@ -988,6 +1259,14 @@ function creaCardRicetta(ricetta) {
 
   const card = document.createElement("div");
   card.className = "ricetta-card";
+  
+  // Mappatura tipo porzioni per traduzione
+  const tipoPorzioniMap = {
+    'porzioni': 'portions',
+    'persone': 'people',
+    'pezzi': 'pieces'
+  };
+  const tipoPorzioniKey = tipoPorzioniMap[ricetta.tipoPorzioni] || 'portions';
 
   card.innerHTML = `
     <div class="card-main">
@@ -996,23 +1275,22 @@ function creaCardRicetta(ricetta) {
         <div class="card-title-wrapper">
           <div class="card-title">
             <span class="ricetta-nome">${ricetta.nome}</span>
-            <span class="edit-nome" title="Modifica nome">✏️</span>
+            <span class="edit-nome" title="${i18n.t('saved_recipes.edit_name_title')}">✏️</span>
           </div>
           <div class="nome-error"></div>
         </div>
         <span class="ricetta-star ${ricetta.preferita ? "attiva" : ""}">★</span>
-        <span class="ricetta-porzioni">x${ricetta.porzioni ?? LIMITI_PORZIONI.MIN} ${ricetta.tipoPorzioni ?? "porzioni"}</span>
+        <span class="ricetta-porzioni">x${ricetta.porzioni ?? LIMITI_PORZIONI.MIN} <span data-i18n="calculator.${tipoPorzioniKey}">${i18n.t('calculator.' + tipoPorzioniKey)}</span></span>
       </div>
       <div class="card-link">
         ${ricetta.link ? `<a href="${ricetta.link}" target="_blank">${ricetta.link}</a>` : ""}
       </div>
     </div>
-    <button class="btn-carica">Carica</button>
+    <button class="btn-carica">${i18n.t('saved_recipes.load_button')}</button>
   `;
 
   wrapper.append(deleteBg, card);
 
-  // Link cliccabile senza popup
   const link = card.querySelector(".card-link a");
   if (link) {
     link.addEventListener("click", e => e.stopPropagation());
@@ -1043,7 +1321,6 @@ function creaCardRicetta(ricetta) {
   return wrapper;
 }
 
-// Mostra la lista delle ricette salvate
 function mostraRicetteSalvate() {
   preservaScroll(() => {
     const contenitore = document.getElementById("lista-ricette-pagina");
@@ -1075,7 +1352,6 @@ function mostraRicetteSalvate() {
       const wrapper = creaCardRicetta(r);
       contenitore.appendChild(wrapper);
       
-      // Abilita swipe e drag DOPO che il wrapper è nel DOM
       const card = wrapper.querySelector(".ricetta-card");
       abilitaSwipe(wrapper, card);
       abilitaDrag(wrapper);
@@ -1088,11 +1364,6 @@ function mostraRicetteSalvate() {
 // 12. INTERAZIONI - Modifica Nome
 // ======================================================
 
-/**
- * Abilita la modifica inline del nome ricetta
- * @param {HTMLElement} card - Card ricetta
- * @param {number} id - ID ricetta
- */
 function abilitaModificaNome(card, id) {
   const nomeEl = card.querySelector(".ricetta-nome");
   const editBtn = card.querySelector(".edit-nome");
@@ -1139,14 +1410,14 @@ function abilitaModificaNome(card, id) {
     const nuovoNome = nomeEl.textContent.trim();
 
     if (!nuovoNome) {
-      mostraErrore("Nome ricetta non valido.");
+      mostraErrore(i18n.t('messages.invalid_recipe_name'));
       nomeEl.textContent = originalName;
       setTimeout(() => nomeEl.focus(), 10);
       return;
     }
 
     if (nomeGiaEsistente(nuovoNome, id)) {
-      mostraErrore("Nome ricetta già esistente.");
+      mostraErrore(i18n.t('messages.recipe_name_exists'));
       nomeEl.textContent = originalName;
       setTimeout(() => nomeEl.focus(), 10);
       return;
@@ -1185,22 +1456,14 @@ function abilitaModificaNome(card, id) {
 // 13. INTERAZIONI - Carica Ricetta
 // ======================================================
 
-/**
- * Imposta il nome ricetta nel calcolatore
- * @param {string} nome - Nome ricetta
- */
 function impostaNomeRicettaCalcolatore(nome) {
   const el = document.getElementById("nomeRicetta");
   if (!el) return;
   el.value = nome;
 }
 
-/**
- * Carica una ricetta nel calcolatore
- * @param {number} id - ID ricetta
- */
 function caricaRicettaDaPagina(id) {
-  vaiAPagina("home", "Calcolatore per Ricette");
+  vaiAPagina("home", i18n.t('app_title'));
 
   document.querySelectorAll(".riga").forEach(r => r.remove());
 
@@ -1208,7 +1471,7 @@ function caricaRicettaDaPagina(id) {
   const ricetta = ricette.find(r => r.id === id);
 
   if (!ricetta) {
-    alert(MESSAGGI_ERRORE.RICETTA_NON_TROVATA);
+    alert(i18n.t('messages.recipe_not_found'));
     return;
   }
 
@@ -1244,15 +1507,11 @@ function caricaRicettaDaPagina(id) {
 }
 
 
+
 // ======================================================
 // 14. INTERAZIONI - Swipe
 // ======================================================
 
-/**
- * Abilita il gesto swipe per eliminare
- * @param {HTMLElement} wrapper - Wrapper ricetta
- * @param {HTMLElement} card - Card ricetta
- */
 function abilitaSwipe(wrapper, card) {
   let startX = 0;
   let startY = 0;
@@ -1316,7 +1575,7 @@ function abilitaSwipe(wrapper, card) {
     const translate = parseFloat(card.style.transform.replace("translateX(", "")) || 0;
 
     if (Math.abs(translate) > deleteThreshold) {
-      if (confirm(MESSAGGI_CONFERMA.ELIMINA_RICETTA)) {
+      if (confirm(i18n.t('messages.confirm_delete'))) {
         eliminaRicetta(Number(wrapper.dataset.id));
         return;
       }
@@ -1337,10 +1596,6 @@ function abilitaSwipe(wrapper, card) {
 // 15. INTERAZIONI - Drag & Drop
 // ======================================================
 
-/**
- * Auto-scroll durante il drag
- * @param {number} touchY - Posizione Y del touch
- */
 function autoScroll(touchY) {
   const topEdge = CONFIG_DRAG.ZONA_AUTO_SCROLL;
   const bottomEdge = window.innerHeight - CONFIG_DRAG.ZONA_AUTO_SCROLL;
@@ -1354,10 +1609,6 @@ function autoScroll(touchY) {
   }
 }
 
-/**
- * Abilita il drag & drop per riordinare
- * @param {HTMLElement} wrapper - Wrapper ricetta
- */
 function abilitaDrag(wrapper) {
   const handle = wrapper.querySelector(".drag-handle");
   if (!handle) return;
@@ -1471,10 +1722,6 @@ function abilitaDrag(wrapper) {
 
 let ricettaCorrenteId = null;
 
-/**
- * Apre il popup di modifica ricetta
- * @param {number} id - ID ricetta
- */
 function apriPopupRicetta(id) {
   const ricette = JSON.parse(localStorage.getItem(STORAGE_KEYS.RICETTE)) || [];
   const ricetta = ricette.find(r => r.id === id);
@@ -1518,10 +1765,6 @@ function apriPopupRicetta(id) {
   };
 }
 
-/**
- * Salva le modifiche dal popup
- * @returns {boolean} - True se salvato con successo
- */
 function salvaPopupRicetta() {
   if (!ricettaCorrenteId) return false;
 
@@ -1559,7 +1802,7 @@ function salvaPopupRicetta() {
 
     if (!nome && (valore || unita !== "g")) {
       nomeInput.classList.add("input-errore");
-      erroreNomeEl.textContent = MESSAGGI_ERRORE.INGREDIENTE_NON_VALIDO;
+      erroreNomeEl.textContent = i18n.t('messages.invalid_ingredient');
       errore = true;
       return;
     }
@@ -1574,7 +1817,7 @@ function salvaPopupRicetta() {
     const num = leggiNumero(valore);
     if (isNaN(num)) {
       inputQta.classList.add("input-errore");
-      erroreQtaEl.textContent = MESSAGGI_ERRORE.QUANTITA_NON_VALIDA;
+      erroreQtaEl.textContent = i18n.t('messages.invalid_quantity');
       errore = true;
       return;
     }
@@ -1591,7 +1834,6 @@ function salvaPopupRicetta() {
   return true;
 }
 
-// Chiude il popup ricetta
 function chiudiPopupRicetta() {
   document.getElementById("popup-overlay").classList.add("hidden");
   document.body.classList.remove("no-scroll");
@@ -1603,25 +1845,18 @@ function chiudiPopupRicetta() {
 // 17. NAVIGAZIONE - Menu e Pagine
 // ======================================================
 
-// Apre il menu laterale
 function apriMenu() {
   document.querySelector(".menu").style.left = "0";
   document.querySelector(".overlay").style.display = "block";
   document.body.classList.add("no-scroll");
 }
 
-// Chiude il menu laterale
 function chiudiMenu() {
   document.querySelector(".menu").style.left = UI.LARGHEZZA_MENU;
   document.querySelector(".overlay").style.display = "none";
   document.body.classList.remove("no-scroll");
 }
 
-/**
- * Naviga a una pagina dell'applicazione
- * @param {string} idPagina - ID della pagina
- * @param {string} titolo - Titolo da mostrare nell'header
- */
 function vaiAPagina(idPagina, titolo) {
   document.querySelectorAll(".pagina").forEach(p => {
     p.classList.remove("attiva");
@@ -1643,7 +1878,6 @@ function vaiAPagina(idPagina, titolo) {
 // 18. INIZIALIZZAZIONE
 // ======================================================
 
-// Limita i valori degli input porzioni tra MIN e MAX
 function limitaValoriMinMax() {
   const inputs = document.querySelectorAll('.input-sarebbe-num, .input-vorrei-num');
   inputs.forEach(input => {
@@ -1655,7 +1889,6 @@ function limitaValoriMinMax() {
   });
 }
 
-// Blocca l'inserimento di caratteri non consentiti negli input porzioni
 function bloccaTastiNonConsentiti() {
   document.addEventListener("keydown", e => {
     const input = e.target;
@@ -1672,7 +1905,6 @@ function bloccaTastiNonConsentiti() {
   });
 }
 
-// Sincronizza il select "vorrei" con il select "sarebbe"
 function sincronizzaSelectPorzioni() {
   document.addEventListener("DOMContentLoaded", () => {
     const selectSarebbe = document.querySelector(".select-sarebbe-tipo");
@@ -1689,7 +1921,6 @@ function sincronizzaSelectPorzioni() {
   });
 }
 
-// Forza il valore minimo sull'input "sarebbe" quando perde il focus
 function forzaValoreMinimoSarebbe() {
   const inputSarebbe = document.querySelector('.input-sarebbe-num');
   if (!inputSarebbe) return;
@@ -1701,7 +1932,6 @@ function forzaValoreMinimoSarebbe() {
   });
 }
 
-// Reset dello stato "auto-changed" sull'input "vorrei" quando l'utente modifica manualmente
 function resetAutoChangedVorrei() {
   document.addEventListener("input", e => {
     const input = e.target;
@@ -1713,7 +1943,6 @@ function resetAutoChangedVorrei() {
   });
 }
 
-// Inizializza tutti i limiti e comportamenti degli input porzioni
 function limitaInputPorzioni() {
   limitaValoriMinMax();
   bloccaTastiNonConsentiti();
@@ -1722,9 +1951,46 @@ function limitaInputPorzioni() {
   resetAutoChangedVorrei();
 }
 
-// Righe iniziali
-aggiungiRiga();
-aggiungiRiga();
+// Funzione per aggiornare i placeholder delle righe esistenti
+function aggiornaPlaceholderRighe() {
+  document.querySelectorAll('.riga').forEach(riga => {
+    const nomeInput = riga.querySelector('.nome');
+    const originaleInput = riga.querySelector('.originale');
+    const disponibileInput = riga.querySelector('.disponibile');
+    
+    if (nomeInput && !nomeInput.value) {
+      nomeInput.placeholder = i18n.t('calculator.ingredient_placeholder');
+    }
+    
+    if (originaleInput && !originaleInput.disabled) {
+      originaleInput.placeholder = i18n.t('calculator.quantity_placeholder');
+    }
+    
+    if (disponibileInput && !disponibileInput.disabled) {
+      disponibileInput.placeholder = i18n.t('calculator.you_have_placeholder');
+    }
+    
+    // Aggiorna anche le opzioni pz e q.b.
+    const selectOrig = riga.querySelector('.unita');
+    const selectHai = riga.querySelector('.unita-hai');
+    
+    if (selectOrig) {
+      const pzOption = selectOrig.querySelector('option[value="pz"]');
+      if (pzOption) pzOption.textContent = i18n.t('units.pz');
+      
+      const qbOption = selectOrig.querySelector('option[value="qb"]');
+      if (qbOption) qbOption.textContent = i18n.t('units.qb');
+    }
+    
+    if (selectHai) {
+      const pzOption = selectHai.querySelector('option[value="pz"]');
+      if (pzOption) pzOption.textContent = i18n.t('units.pz');
+      
+      const qbOption = selectHai.querySelector('option[value="qb"]');
+      if (qbOption) qbOption.textContent = i18n.t('units.qb');
+    }
+  });
+}
 
 // Inizializza limiti porzioni
 limitaInputPorzioni();
@@ -1758,6 +2024,15 @@ document.addEventListener("input", e => {
   }
 });
 
+// Inizializza i18n quando il DOM è pronto
+document.addEventListener('DOMContentLoaded', async () => {
+  await i18n.init();
+  
+  // Crea righe iniziali DOPO l'inizializzazione di i18n
+  aggiungiRiga();
+  aggiungiRiga();
+});
+
 
 
 
@@ -1765,7 +2040,7 @@ document.addEventListener("input", e => {
 // FUORI CODICE ==================================================
 
 if ("serviceWorker" in navigator) {
-  const CURRENT_VERSION = "ricette-v3.5.1"; // Deve corrispondere alla versione nel service-worker.js
+  const CURRENT_VERSION = "ricette-v3.9"; // Deve corrispondere alla versione nel service-worker.js
   const lastReloadVersion = localStorage.getItem("lastReloadVersion");
   
   // Se abbiamo già ricaricato per questa versione, non farlo più
@@ -1833,6 +2108,7 @@ if ("serviceWorker" in navigator) {
     });
   }
 }
+
 
 
 
