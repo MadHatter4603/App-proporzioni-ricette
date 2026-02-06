@@ -1,0 +1,98 @@
+{
+  "app_title": "Recipe Calculator",
+  
+  "menu": {
+    "title": "Menu",
+    "calculator": "🔢 Calculator",
+    "saved_recipes": "📚 Saved Recipes",
+    "conversions": "📏 Conversions",
+    "timer": "⏰ Timer",
+    "settings": "⚙️ Settings",
+    "feedback": "📝 Feedback",
+    "footer": "© 2026 – Dario Pazienza"
+  },
+  
+  "calculator": {
+    "recipe_name_placeholder": "Recipe name",
+    "save_button": "💾 Save",
+    "reset_button_title": "Reset quantities",
+    "portions_for": "Recipe is for:",
+    "portions_want": "I want / Can make:",
+    "portions": "servings",
+    "people": "people",
+    "pieces": "pieces",
+    "ingredient_placeholder": "Ingredient",
+    "quantity_placeholder": "Quantity",
+    "you_have_placeholder": "You have",
+    "add_ingredient": "Add ingredient",
+    "calculate_button": "Calculate new proportions"
+  },
+  
+  "saved_recipes": {
+    "title": "Saved Recipes",
+    "search_placeholder": "Search recipe…",
+    "load_button": "Load",
+    "edit_name_title": "Edit name",
+    "link_placeholder": "Recipe link:",
+    "notes_placeholder": "Notes..."
+  },
+  
+  "popup": {
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "select_language": "Select language:"
+  },
+  
+  "pages": {
+    "conversions": "Conversions",
+    "timer": "Timer",
+    "coming_soon": "Coming Soon!",
+    "feedback_text": "Found a problem or want to suggest improvements?",
+    "feedback_button": "Send feedback"
+  },
+  
+  "messages": {
+    "recipe_saved": "Recipe saved ✔️",
+    "recipe_not_found": "Recipe not found",
+    "ingredients_insufficient": "You don't have enough ingredients for this recipe :(",
+    "invalid_number": "Please enter a valid number!",
+    "invalid_ingredient": "Please enter a valid ingredient!",
+    "recipe_name_empty": "Please enter recipe name.",
+    "recipe_name_duplicate": "Recipe name already exists.",
+    "inconsistent_units": "Inconsistent units!",
+    "invalid_quantity": "Invalid quantity!",
+    "no_quantity": "No quantity to recalculate!",
+    "no_ingredient": "No valid ingredient",
+    "confirm_reset": "Clear the fields with available quantities?",
+    "confirm_delete": "Delete this recipe?",
+    "invalid_recipe_name": "Invalid recipe name.",
+    "recipe_name_exists": "Recipe name already exists."
+  },
+  
+  "aria": {
+    "close_notification": "Close notification",
+    "open_menu": "Open menu",
+    "main_menu": "Main menu",
+    "original_portions": "Original portions number",
+    "original_portions_type": "Original portions type",
+    "desired_portions": "Desired portions number",
+    "desired_portions_type": "Desired portions type",
+    "ingredients_list": "Ingredients list",
+    "saved_recipes_list": "Saved recipes",
+    "search_recipes": "Search among saved recipes",
+    "recipe_ingredients": "Recipe ingredients",
+    "recipe_notes": "Recipe notes",
+    "recipe_link": "Link to online recipe",
+    "portions_number": "Portions number"
+  },
+  
+  "units": {
+    "pz": "pc.",
+    "qb": "t.t."
+  }
+}

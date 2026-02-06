@@ -1,0 +1,98 @@
+{
+  "app_title": "Calculadora de Recetas",
+  
+  "menu": {
+    "title": "Menú",
+    "calculator": "🔢 Calculadora",
+    "saved_recipes": "📚 Recetas guardadas",
+    "conversions": "📏 Conversiones",
+    "timer": "⏰ Temporizador",
+    "settings": "⚙️ Configuración",
+    "feedback": "📝 Comentarios",
+    "footer": "© 2026 – Dario Pazienza"
+  },
+  
+  "calculator": {
+    "recipe_name_placeholder": "Nombre de receta",
+    "save_button": "💾 Guardar",
+    "reset_button_title": "Restablecer cantidades",
+    "portions_for": "Receta para:",
+    "portions_want": "Quiero / Puedo hacer:",
+    "portions": "porciones",
+    "people": "personas",
+    "pieces": "piezas",
+    "ingredient_placeholder": "Ingrediente",
+    "quantity_placeholder": "Cantidad",
+    "you_have_placeholder": "Tienes",
+    "add_ingredient": "Añadir ingrediente",
+    "calculate_button": "Calcular nuevas proporciones"
+  },
+  
+  "saved_recipes": {
+    "title": "Recetas guardadas",
+    "search_placeholder": "Buscar receta…",
+    "load_button": "Cargar",
+    "edit_name_title": "Editar nombre",
+    "link_placeholder": "Enlace receta:",
+    "notes_placeholder": "Notas..."
+  },
+  
+  "popup": {
+    "cancel": "Cancelar",
+    "save": "Guardar"
+  },
+  
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "select_language": "Seleccionar idioma:"
+  },
+  
+  "pages": {
+    "conversions": "Conversiones",
+    "timer": "Temporizador",
+    "coming_soon": "¡Próximamente!",
+    "feedback_text": "¿Encontraste un problema o quieres sugerir mejoras?",
+    "feedback_button": "Enviar comentario"
+  },
+  
+  "messages": {
+    "recipe_saved": "Receta guardada ✔️",
+    "recipe_not_found": "Receta no encontrada",
+    "ingredients_insufficient": "No tienes suficientes ingredientes para esta receta :(",
+    "invalid_number": "¡Por favor ingresa un número válido!",
+    "invalid_ingredient": "¡Por favor ingresa un ingrediente válido!",
+    "recipe_name_empty": "Por favor ingresa el nombre de la receta.",
+    "recipe_name_duplicate": "El nombre de la receta ya existe.",
+    "inconsistent_units": "¡Unidades inconsistentes!",
+    "invalid_quantity": "¡Cantidad no válida!",
+    "no_quantity": "¡No hay cantidad para recalcular!",
+    "no_ingredient": "Ningún ingrediente válido",
+    "confirm_reset": "¿Vaciar los campos con las cantidades disponibles?",
+    "confirm_delete": "¿Eliminar esta receta?",
+    "invalid_recipe_name": "Nombre de receta no válido.",
+    "recipe_name_exists": "El nombre de la receta ya existe."
+  },
+  
+  "aria": {
+    "close_notification": "Cerrar notificación",
+    "open_menu": "Abrir menú",
+    "main_menu": "Menú principal",
+    "original_portions": "Número de porciones originales",
+    "original_portions_type": "Tipo de porciones originales",
+    "desired_portions": "Número de porciones deseadas",
+    "desired_portions_type": "Tipo de porciones deseadas",
+    "ingredients_list": "Lista de ingredientes",
+    "saved_recipes_list": "Recetas guardadas",
+    "search_recipes": "Buscar entre las recetas guardadas",
+    "recipe_ingredients": "Ingredientes de la receta",
+    "recipe_notes": "Notas sobre la receta",
+    "recipe_link": "Enlace a receta en línea",
+    "portions_number": "Número de porciones"
+  },
+  
+  "units": {
+    "pz": "pz.",
+    "qb": "c/n"
+  }
+}
